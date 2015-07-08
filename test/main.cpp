@@ -273,7 +273,7 @@ int run_vector3_test()
 
 int run_quaternion_test()
 {
-	typedef Quaternion<double> quatd;
+	typedef quaternion<double> quatd;
 
 	quatd q(1,2,3,4);
 

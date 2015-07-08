@@ -29,7 +29,7 @@
  * @tparam T Type used for the entries of the quaternion.
  */
 template<typename T>
-class Quaternion
+class quaternion
 {
 public:
 	// TODO: Single member access
@@ -40,20 +40,20 @@ public:
 	// TODO: toAxisAngle
 
 	//! Constructs an identity quaternion (1,0,0,0).
-	Quaternion() : w(1), x(0), y(0), z(0) {}
+	quaternion() : w(1), x(0), y(0), z(0) {}
 
 	//! Constructs a quaternion (w,x,y,z).
-	Quaternion(const T& w, const T& x, const T& y, const T& z)
+	quaternion(const T& w, const T& x, const T& y, const T& z)
 		: w(w), x(x), y(y), z(z) {}
 
 	//! Constructs a quaternion (w,x,y,z).
-	Quaternion(T&& w, T&& x, T&& y, T&& z)
+	quaternion(T&& w, T&& x, T&& y, T&& z)
 		: w(std::move(w)), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
 
 	//! Returns the conjugate of this quaternion
-	Quaternion conjugated() const
+	quaternion conjugated() const
 	{
-		return Quaternion(w,-x,-y,-z);
+		return quaternion(w,-x,-y,-z);
 	}
 
 	//! Sets this quaternion to its conjugate
@@ -72,10 +72,10 @@ public:
 	}
 
 	//! Returns the normalized unit from this quaterion
-	Quaternion normalized() const
+	quaternion normalized() const
 	{
 		T l = length();
-		return Quaternion(w/l,x/l,y/l,z/l);
+		return quaternion(w/l,x/l,y/l,z/l);
 	}
 
 	//! Normalizes this quaternion
@@ -88,32 +88,32 @@ public:
 		z = z/l;
 	}
 
-	friend Quaternion operator+(const Quaternion& lhs, const Quaternion& rhs)
+	friend quaternion operator+(const quaternion& lhs, const quaternion& rhs)
 	{
-		return Quaternion(lhs.w + rhs.w, lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+		return quaternion(lhs.w + rhs.w, lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 	}
 
-	friend Quaternion operator-(const Quaternion& lhs, const Quaternion& rhs)
+	friend quaternion operator-(const quaternion& lhs, const quaternion& rhs)
 	{
-		return Quaternion(lhs.w - rhs.w, lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+		return quaternion(lhs.w - rhs.w, lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 	}
 
-	friend Quaternion operator*(const Quaternion& q1, const Quaternion& q2)
+	friend quaternion operator*(const quaternion& q1, const quaternion& q2)
 	{
-		return Quaternion(q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z,
+		return quaternion(q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z,
 						  q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y,
 						  q1.w*q2.y - q1.x*q2.z + q1.y*q2.w + q1.z*q2.x,
 						  q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w);
 	}
 
-	friend Quaternion operator*(const T& factor, const Quaternion& q)
+	friend quaternion operator*(const T& factor, const quaternion& q)
 	{
-		return Quaternion(q.w*factor, q.x*factor, q.y*factor, q.z*factor);
+		return quaternion(q.w*factor, q.x*factor, q.y*factor, q.z*factor);
 	}
 
-	friend const Quaternion operator*(const Quaternion& q, const T& factor)
+	friend const quaternion operator*(const quaternion& q, const T& factor)
 	{
-		return Quaternion(q.w*factor, q.x*factor, q.y*factor, q.z*factor);
+		return quaternion(q.w*factor, q.x*factor, q.y*factor, q.z*factor);
 	}
 
 public:
