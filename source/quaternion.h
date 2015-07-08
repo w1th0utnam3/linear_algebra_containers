@@ -23,6 +23,8 @@
 #include <cmath>
 #include <utility>
 
+#include "vector3.h"
+
 /**
  * Template quaternion class with basic quaternion algebra operations.
  *
@@ -33,11 +35,9 @@ class quaternion
 {
 public:
 	// TODO: Single member access
-	// TODO: fromAxisAngle
 	// TODO: Different rotation orders
 	// TODO: toMatrix
 	// TODO: toEulerAngles
-	// TODO: toAxisAngle
 
 	//! Constructs an identity quaternion (1,0,0,0).
 	quaternion() : w(1), x(0), y(0), z(0) {}
@@ -50,36 +50,74 @@ public:
 	quaternion(T&& w, T&& x, T&& y, T&& z)
 		: w(std::move(w)), x(std::move(x)), y(std::move(y)), z(std::move(z)) {}
 
-	//! Returns the conjugate of this quaternion
-	quaternion conjugated() const
+	//! Creates a quaternion for the rotation about the specified angle around the specified axis. Axis must be normalized.
+	inline static quaternion fromAxisAndAngle(const vector3<T>& axis, const T& angle)
+	{
+		using std::sin;
+		using std::cos;
+		T s = sin(angle/2);
+		return quaternion(cos(angle/2), axis.x()*s, axis.y()*s, axis.z()*s);
+	}
+
+	//! Creates a quaternion for the rotation about the specified angle around the specified axis. Axis must be normalized.
+	inline static quaternion fromAxisAndAngle(const T& axisX, const T& axisY, const T& axisZ, const T& angle)
+	{
+		using std::sin;
+		using std::cos;
+		T s = sin(angle/2);
+		return quaternion(cos(angle/2), axisX*s, axisY*s, axisZ*s);
+	}
+
+	//! Calculates the normalized axis/angle representation of the quaternion. Quaternion must be normalized.
+	inline void getAxisAndAngle(vector3<T>* axisOut, T* angleOut)
+	{
+		T w2 = w*w;
+		if(w2 > 1) {
+			axisOut->setX(T(1));
+			axisOut->setY(T(0));
+			axisOut->setZ(T(0));
+			angleOut = T(0);
+		} else {
+			using std::acos;
+			using std::sqrt;
+			angleOut = 2*acos(w);
+			T s = sqrt(1-w2);
+			axisOut->setX(x/s);
+			axisOut->setY(y/s);
+			axisOut->setZ(z/s);
+		}
+	}
+
+	//! Returns the conjugate of this quaternion.
+	inline quaternion conjugated() const
 	{
 		return quaternion(w,-x,-y,-z);
 	}
 
-	//! Sets this quaternion to its conjugate
-	void conjugate()
+	//! Sets this quaternion to its conjugate.
+	inline void conjugate()
 	{
 		x = -x;
 		y = -y;
 		z = -z;
 	}
 
-	// Returns the length / norm of the quaternion
-	T length() const
+	// Returns the length / norm of the quaternion.
+	inline T length() const
 	{
 		using std::sqrt;
 		return sqrt(w*w + x*x + y*y + z*z);
 	}
 
-	//! Returns the normalized unit from this quaterion
-	quaternion normalized() const
+	//! Returns the normalized unit from this quaterion.
+	inline quaternion normalized() const
 	{
 		T l = length();
 		return quaternion(w/l,x/l,y/l,z/l);
 	}
 
-	//! Normalizes this quaternion
-	void normalize()
+	//! Normalizes this quaternion.
+	inline void normalize()
 	{
 		double l = length();
 		w = w/l;
@@ -88,17 +126,20 @@ public:
 		z = z/l;
 	}
 
-	friend quaternion operator+(const quaternion& lhs, const quaternion& rhs)
+	//! Adds two quaternions.
+	inline friend quaternion operator+(const quaternion& lhs, const quaternion& rhs)
 	{
 		return quaternion(lhs.w + rhs.w, lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 	}
 
-	friend quaternion operator-(const quaternion& lhs, const quaternion& rhs)
+	//! Subtracts two quaternions.
+	inline friend quaternion operator-(const quaternion& lhs, const quaternion& rhs)
 	{
 		return quaternion(lhs.w - rhs.w, lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 	}
 
-	friend quaternion operator*(const quaternion& q1, const quaternion& q2)
+	//! Multiplies two quaternions.
+	inline friend quaternion operator*(const quaternion& q1, const quaternion& q2)
 	{
 		return quaternion(q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z,
 						  q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y,
@@ -106,12 +147,14 @@ public:
 						  q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w);
 	}
 
-	friend quaternion operator*(const T& factor, const quaternion& q)
+	//! Scales a quaternion.
+	inline friend quaternion operator*(const T& factor, const quaternion& q)
 	{
 		return quaternion(q.w*factor, q.x*factor, q.y*factor, q.z*factor);
 	}
 
-	friend const quaternion operator*(const quaternion& q, const T& factor)
+	//! Scales a quaternion.
+	inline friend const quaternion operator*(const quaternion& q, const T& factor)
 	{
 		return quaternion(q.w*factor, q.x*factor, q.y*factor, q.z*factor);
 	}
