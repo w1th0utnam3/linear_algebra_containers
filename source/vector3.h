@@ -32,6 +32,8 @@
 template<typename T>
 class vector3 : public column_vector<T,3>
 {
+	// TODO: Set method with all components
+
 public:
 	//! Constructs a 3d vector with uninitialized values.
 	vector3() = default;
