@@ -56,20 +56,6 @@ public:
 	{
 	}
 
-	/*
-	//! Returns the component of the vector at index position i as a modifiable reference.
-	inline T& operator[](size_t i)
-	{
-		return this->entries[i];
-	}
-
-	//! Returns the component of the vector at index position i as a const reference.
-	inline const T& operator[](size_t i) const
-	{
-		return this->entries[i];
-	}
-	*/
-
 	//! Returns the length (2 norm) of the vector.
 	inline T length() const
 	{
