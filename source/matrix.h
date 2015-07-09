@@ -23,25 +23,22 @@
 #include <cstdlib>
 #include <array>
 #include <utility>
+#include <initializer_list>
 
 /**
- * Matrix template with support of basic linear alegbra operations
+ * Template matrix type with support of basic matrix operations.
  *
- * This template provides a basic matrix implementation for m x n matrices. It
- * is not intended for large scale computations with huge dimensions but instead
- * for smaller problems and calculations in computer graphics.
  * To access entries there is a matrix index operator implemented as the ()
  * function operator. This operator uses the standard mathematical row-major
  * way of adressing entries: mat(row,column). All operations are implemented
  * by using this row-major () operator. Therefore everything works like it is
- * defined in most linear algebra books.
+ * defined in most linear algebra scripts.
  * Internally the elments of the matrix are stored in a colum-major ordering in
- * a 1-dimensional data array. This storage is either directly accessible with
- * the implemented [] array subscript operator or via the data() method which
+ * a 1-dimensional data array. This storage is either accessible via the
+ * implemented [] array subscript operator or via the data() method which
  * returns a pointer to the underliyng data.
  *
- * @tparam T Type used for the entries of the matrix. Must support basic
- * aritmethic operations.
+ * @tparam T Type used for the entries in the matrix.
  * @tparam m Number of rows of the matrix.
  * @tparam n Number of columns of the matrix.
  */
@@ -57,142 +54,64 @@ public:
 
 	//! The type of the matrix
 	typedef matrix<T,m,n> matrix_type;
-	//! The type of the transposed matrix
+	//! The type of the transposed
 	typedef matrix<T,n,m> transposed_matrix_type;
 
-	/**
-	 * @brief Construct an empty matrix
-	 *
-	 * All entries are uninitialized if T is of fundamental type or
-	 * constructed using their default constructor if T is a complex
-	 * type.
-	 */
+	//! Constructs a matrix with non-initialized entries.
 	matrix() = default;
 
-	/**
-	 * @brief Construct a matrix with specified entries
-	 *
-	 * This constructor initializes the matrix with the specified entries.
-	 * It also allows using the braced initializer list syntax to initalize
-	 * the matrix, e.g.: matrix<T,2,2> mat{{1,2,3,4}}.
-	 */
-	matrix(const std::array<T,n*m>& array)
+	//! Constructs a matrix with the specified entries.
+	matrix(std::array<T,n*m> array)
 		: entries(array)
 	{
 	}
 
-	/**
-	 * @brief Construct a matrix with specified entries
-	 *
-	 * This constructor initializes the matrix with the specified entries.
-	 * It also allows using the braced initializer list syntax to initalize
-	 * the matrix, e.g.: matrix<T,2,2> mat{{1,2,3,4}}.
-	 * This constructor uses perfect forwarind to pass the an r-value to the
-	 * constructor of the data array.
-	 */
-	matrix(std::array<T,n*m>&& array)
-		: entries(std::forward<std::array<T,n*m>>(array))
-	{
-	}
-
-	/**
-	 * @brief Create an identity matrix
-	 *
-	 * This method constructs a matrix with all entries set to zero except
-	 * for the diagonal entries which are set to one.
-	 * @return Retuns an identity matrix.
-	 */
+	//! Constructs a matrix initalized to an identity matrix
 	static matrix_type createIdentity()
 	{
 		matrix_type result;
-		result.toIdentity();
+		result.eye();
 		return result;
 	}
 
-	/**
-	 * @brief 2d matrix index access operator
-	 *
-	 * This operator returns a reference to the entry of the matrix specified
-	 * by the parameters. The operator uses row-major indexing.
-	 * @param row The row of the entry.
-	 * @param column The column of the entry.
-	 * @return A reference to the specified entry.
-	 */
+	//! Returns a reference to the specified entry.
 	T& operator()(size_t row, size_t column)
 	{
 		return entries[row + column*m];
 	}
 
-	/**
-	 * @brief 2d matrix index access operator
-	 *
-	 * This operator returns a const reference to the entry of the matrix
-	 * specified by the arguments. The operator uses row-major indexing.
-	 * @param row The row of the entry.
-	 * @param column The column of the entry.
-	 * @return A const reference to the specified entry.
-	 */
+	//! Returns a const reference to the specified entry.
 	const T& operator()(size_t row, size_t column) const
 	{
 		return entries[row + column*m];
 	}
 
-	/**
-	 * @brief 1d matrix index access operator
-	 *
-	 * This operator returns a reference to the i-th entry of the matrix. The
-	 * operator uses column-major indexing i.e. in a 3x3 matrix the entries
-	 * [0], [1] and [2] will be the first column of the matrix.
-	 * @param index The one dimensional index of the entry.
-	 * @return A reference to the specified entry.
-	 */
+	//! Returns a reference to the specified entry.
 	T& operator[](size_t i)
 	{
 		return entries[i];
 	}
 
-	/**
-	 * @brief 1d matrix index access operator
-	 *
-	 * This operator returns a const reference to the i-th entry of the matrix.
-	 * The operator uses column-major indexing i.e. in a 3x3 matrix the entries
-	 * [0], [1] and [2] will be the first column of the matrix.
-	 * @param index The one dimensional index of the entry.
-	 * @return A const reference to the specified entry.
-	 */
+	//! Returns a const reference to the specified entry.
 	const T& operator[](size_t i) const
 	{
 		return entries[i];
 	}
 
-	/**
-	 * @brief Fill matrix with a value
-	 *
-	 * Sets value as the value for all the entries in the matrix.
-	 * @param value The value that should be used to fill the matrix
-	 */
-	void fill(const T& value)
+	//! Fills the matrix with the specified value.
+	void fill(T&& value)
 	{
-		entries.fill(value);
+		entries.fill(std::forward<T>(value));
 	}
 
-	/**
-	 * @brief Fill matrix with zeros
-	 *
-	 * Sets all entries of the matrix to zero.
-	 */
+	//! Fills the matrix with zeros.
 	void zeros()
 	{
 		entries.fill(T(0));
 	}
 
-	/**
-	 * @brief Set matrix to identity matrix
-	 *
-	 * Sets all entries to zero except for the diagonal entries which are
-	 * set to one.
-	 */
-	void toIdentity()
+	//! Sets the matrix to an identity matrix.
+	void eye()
 	{
 		entries.fill(T(0));
 
@@ -202,42 +121,19 @@ public:
 		}
 	}
 
-	/**
-	 * @brief Get pointer data
-	 *
-	 * Returns a pointer to the first element in the underlying data
-	 * array which is used to store all entries of the matrix. The matrix
-	 * uses a column-major memory layout therefore it is possble to pass
-	 * this pointer to openGL methods.
-	 * @return Pointer to the entries of the matrix.
-	 */
+	//! Returns a pointer to the data of the matrix
 	T* data()
 	{
 		return entries.data();
 	}
 
-	/**
-	 * @brief Get pointer data
-	 *
-	 * Returns a const pointer to the first element in the underlying data
-	 * array which is used to store all entries of the matrix. The matrix
-	 * uses a column-major memory layout therefore it is possble to pass
-	 * this pointer to openGL methods.
-	 * @return Const pointer to the entries of the matrix.
-	 */
+	//! Returns a const pointer to the data of the matrix
 	T* data() const
 	{
 		return entries.data();
 	}
 
-	/**
-	 * @brief Create transposed matrix
-	 *
-	 * Constructs the transposed of this matrix, i.e. creating matrix
-	 * B of dimensions [n x m] from matrix A [m x n] with A*B = I where
-	 * I is an identity matrix.
-	 * @return The transposed of this matrix.
-	 */
+	//! Returns the transposed of the matrix.
 	transposed_matrix_type transposed() const
 	{
 		transposed_matrix_type result;
@@ -352,6 +248,17 @@ inline T operator*(const matrix<T,1,m>& lhs, const matrix<T,m,1>& rhs)
 	T result(0);
 	for(size_t i = 0; i < m; i++) {
 		result += lhs(0,i) * rhs(i,0);
+	}
+	return result;
+}
+
+//! Simplified product when the matrix product is the same as a scalar product. ([m x 1]*[1 x m] = [1])
+template<typename T, size_t m>
+inline T operator*(const matrix<T,m,1>& lhs, const matrix<T,1,m>& rhs)
+{
+	T result(0);
+	for(size_t i = 0; i < m; i++) {
+		result += lhs(i,0) * rhs(0,i);
 	}
 	return result;
 }
