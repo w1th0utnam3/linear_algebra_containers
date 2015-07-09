@@ -67,7 +67,7 @@ public:
 	}
 
 	//! Constructs a matrix initalized to an identity matrix
-	inline static matrix_type createIdentity()
+	static matrix_type createIdentity()
 	{
 		matrix_type result;
 		result.eye();
@@ -75,43 +75,43 @@ public:
 	}
 
 	//! Returns a reference to the specified entry.
-	inline T& operator()(size_t row, size_t column)
+	T& operator()(size_t row, size_t column)
 	{
 		return entries[row + column*m];
 	}
 
 	//! Returns a const reference to the specified entry.
-	inline const T& operator()(size_t row, size_t column) const
+	const T& operator()(size_t row, size_t column) const
 	{
 		return entries[row + column*m];
 	}
 
 	//! Returns a reference to the specified entry.
-	inline T& operator[](size_t i)
+	T& operator[](size_t i)
 	{
 		return entries[i];
 	}
 
 	//! Returns a const reference to the specified entry.
-	inline const T& operator[](size_t i) const
+	const T& operator[](size_t i) const
 	{
 		return entries[i];
 	}
 
 	//! Fills the matrix with the specified value.
-	inline void fill(T&& value)
+	void fill(T&& value)
 	{
 		entries.fill(std::forward<T>(value));
 	}
 
 	//! Fills the matrix with zeros.
-	inline void zeros()
+	void zeros()
 	{
 		entries.fill(T(0));
 	}
 
 	//! Sets the matrix to an identity matrix.
-	inline void eye()
+	void eye()
 	{
 		entries.fill(T(0));
 
@@ -122,19 +122,19 @@ public:
 	}
 
 	//! Returns a pointer to the data of the matrix
-	inline T* data()
+	T* data()
 	{
 		return entries.data();
 	}
 
 	//! Returns a const pointer to the data of the matrix
-	inline T* data() const
+	T* data() const
 	{
 		return entries.data();
 	}
 
 	//! Returns the transposed of the matrix.
-	inline transposed_matrix_type transposed() const
+	transposed_matrix_type transposed() const
 	{
 		transposed_matrix_type result;
 		for(size_t i = 0; i < m; i++) {
@@ -146,7 +146,7 @@ public:
 	}
 
 	//! Adds the right matrix to the left.
-	inline matrix_type operator+=(const matrix_type& rhs)
+	matrix_type operator+=(const matrix_type& rhs)
 	{
 		for(size_t i = 0; i < (m*n); i++) {
 			entries[i] += rhs.entries[i];
@@ -155,7 +155,7 @@ public:
 	}
 
 	//! Substracts the right matrix from the left.
-	inline matrix_type operator-=(const matrix_type& rhs)
+	matrix_type operator-=(const matrix_type& rhs)
 	{
 		for(size_t i = 0; i < (m*n); i++) {
 			entries[i] -= rhs.entries[i];
@@ -164,7 +164,7 @@ public:
 	}
 
 	//! Scales the matrix by the specified factor.
-	inline matrix_type operator*=(double factor)
+	matrix_type operator*=(double factor)
 	{
 		for(size_t i = 0; i < (m*n); i++) {
 			entries[i] *= factor;
@@ -173,7 +173,7 @@ public:
 	}
 
 	//! Returns whether two matrices have identical entries
-	inline friend bool operator==(const matrix_type& lhs, const matrix_type& rhs)
+	friend bool operator==(const matrix_type& lhs, const matrix_type& rhs)
 	{
 		for(size_t i = 0; i < n*m; i++) {
 			if (lhs.entries[i] != rhs.entries[i]) return false;
@@ -182,9 +182,41 @@ public:
 	}
 
 	//! Returns whether two matrices have not identical entries
-	inline friend bool operator!=(const matrix_type& lhs, const matrix_type& rhs)
+	friend bool operator!=(const matrix_type& lhs, const matrix_type& rhs)
 	{
 		return !(lhs == rhs);
+	}
+
+	//! Returns the matrix scaled by the specified factor.
+	friend matrix<T,m,n> operator*(const matrix<T,m,n>& mat, double factor)
+	{
+		matrix<T,m,n> result(mat);
+		result *= factor;
+		return result;
+	}
+
+	//! Returns the matrix scaled by the specified factor.
+	friend matrix<T,m,n> operator*(double factor, const matrix<T,m,n>& mat)
+	{
+		matrix<T,m,n> result(mat);
+		result *= factor;
+		return result;
+	}
+
+	//! Returns the sum of the two matrices. Matrix dimensions must agree.
+	friend matrix<T,m,n> operator+(const matrix<T,m,n>& lhs, const matrix<T,m,n>& rhs)
+	{
+		matrix<T,m,n> result(lhs);
+		result += rhs;
+		return result;
+	}
+
+	//! Returns the difference of the two matrices. Matrix dimensions must agree.
+	friend matrix<T,m,n> operator-(const matrix<T,m,n>& lhs, const matrix<T,m,n>& rhs)
+	{
+		matrix<T,m,n> result(lhs);
+		result -= rhs;
+		return result;
 	}
 
 protected:
@@ -228,42 +260,6 @@ inline T operator*(const matrix<T,m,1>& lhs, const matrix<T,1,m>& rhs)
 	for(size_t i = 0; i < m; i++) {
 		result += lhs(i,0) * rhs(0,i);
 	}
-	return result;
-}
-
-//! Returns the matrix scaled by the specified factor.
-template<typename T, size_t m, size_t n>
-inline matrix<T,m,n> operator*(const matrix<T,m,n>& mat, double factor)
-{
-	matrix<T,m,n> result(mat);
-	result *= factor;
-	return result;
-}
-
-//! Returns the matrix scaled by the specified factor.
-template<typename T, size_t m, size_t n>
-inline matrix<T,m,n> operator*(double factor, const matrix<T,m,n>& mat)
-{
-	matrix<T,m,n> result(mat);
-	result *= factor;
-	return result;
-}
-
-//! Returns the sum of the two matrices. Matrix dimensions must agree.
-template<typename T, size_t m, size_t n>
-inline matrix<T,m,n> operator+(const matrix<T,m,n>& lhs, const matrix<T,m,n>& rhs)
-{
-	matrix<T,m,n> result(lhs);
-	result += rhs;
-	return result;
-}
-
-//! Returns the difference of the two matrices. Matrix dimensions must agree.
-template<typename T, size_t m, size_t n>
-inline matrix<T,m,n> operator-(const matrix<T,m,n>& lhs, const matrix<T,m,n>& rhs)
-{
-	matrix<T,m,n> result(lhs);
-	result -= rhs;
 	return result;
 }
 

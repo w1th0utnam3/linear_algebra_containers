@@ -32,96 +32,77 @@
 template<typename T>
 class vector3 : public column_vector<T,3>
 {
-	// TODO: Set method with all components
 
 public:
 	//! Constructs a 3d vector with uninitialized values.
 	vector3() = default;
 
 	//! Constructs a 3d vector with the specified values.
-	inline vector3(const T& x, const T& y, const T& z)
+	vector3(T x, T y, T z)
 	{
 		this->entries[0] = x;
 		this->entries[1] = y;
 		this->entries[2] = z;
 	}
 
-	//! Constructs a 3d vector with the specified r-values.
-	inline vector3(T&& x, T&& y, T&& z)
-	{
-		this->entries[0] = std::move(x);
-		this->entries[1] = std::move(y);
-		this->entries[2] = std::move(z);
-	}
-
 	//! Constructs a 3d vector from the specified 3 entry vector.
-	inline vector3(const column_vector<T,3>& vec)
+	vector3(const column_vector<T,3>& vec)
 		: column_vector<T,3>(vec)
 	{
 	}
 
 	//! Constructs a new column vector from the specified 3 entry rvalue vector.
-	inline vector3(column_vector<T,3>&& vec)
+	vector3(column_vector<T,3>&& vec)
 		: column_vector<T,3>(std::forward<column_vector<T,3>>(vec))
 	{
 	}
 
 	//! Returns the x value of the vector.
-	inline T x() const
+	T x() const
 	{
 		return this->entries[0];
 	}
 
 	//! Returns the y value of the vector
-	inline T y() const
+	T y() const
 	{
 		return this->entries[1];
 	}
 
 	//! Returns the z value of the vector
-	inline T z() const
+	T z() const
 	{
 		return this->entries[2];
 	}
 
 	//! Sets the x value of the vector.
-	inline void setX(const T& value)
+	void setX(T value)
 	{
 		this->entries[0] = value;
 	}
 
 	//! Sets the y value of the vector.
-	inline void setY(const T& value)
+	void setY(T value)
 	{
 		this->entries[1] = value;
 	}
 
 	//! Sets the z value of the vector.
-	inline void setZ(const T& value)
+	void setZ(T value)
 	{
 		this->entries[2] = value;
 	}
 
-	//! Sets the x value of the vector.
-	inline void setX(T&& value)
+	//! Sets all values of the vector
+	void set(T x, T y, T z)
 	{
-		this->entries[0] = std::move(value);
-	}
-
-	//! Sets the y value of the vector.
-	inline void setY(T&& value)
-	{
-		this->entries[1] = std::move(value);
-	}
-
-	//! Sets the z value of the vector.
-	inline void setZ(T&& value)
-	{
-		this->entries[2] = std::move(value);
+		this->entries[0] = x;
+		this->entries[1] = y;
+		this->entries[2] = z;
 	}
 
 	//! Calculates the cross product of two vectors.
-	inline static vector3 crossProduct(const vector3& lhs, const vector3& rhs)
+	static vector3 crossProduct(const vector3& lhs, const vector3& rhs)
 	{
 		vector3 result;
 		result[0] = lhs[1]*rhs[2] - lhs[2]*rhs[1];

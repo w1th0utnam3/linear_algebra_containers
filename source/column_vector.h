@@ -45,19 +45,19 @@ public:
 	column_vector() = default;
 
 	//! Constructs a new column vector from the specified [m x 1] matrix
-	inline column_vector(const matrix<T,dim,1>& mat)
+	column_vector(const matrix<T,dim,1>& mat)
 		: matrix<T,dim,1>(mat)
 	{
 	}
 
 	//! Constructs a new column vector from the specified [m x 1] rvalue matrix
-	inline column_vector(matrix<T,dim,1>&& mat)
+	column_vector(matrix<T,dim,1>&& mat)
 		: matrix<T,dim,1>(std::forward<matrix<T,dim,1>>(mat))
 	{
 	}
 
 	//! Returns the length (2 norm) of the vector.
-	inline T length() const
+	T length() const
 	{
 		T result(0);
 		for(size_t i = 0; i < dim; i++) {
@@ -69,7 +69,7 @@ public:
 	}
 
 	//! Returns the squared 2 norm of the vector.
-	inline T lengthSquared() const
+	T lengthSquared() const
 	{
 		T result(0);
 		for(size_t i = 0; i < dim; i++) {
@@ -80,13 +80,13 @@ public:
 	}
 
 	//! Normalizes the vector by dividing all elements by the vectors length.
-	inline void normalize()
+	void normalize()
 	{
 		(*this) *= (1/length());
 	}
 
 	//! Returns a normalized copy of this vector.
-	inline vector_type normalized() const
+	vector_type normalized() const
 	{
 		vector_type copy(*this);
 		copy.normalize();
@@ -94,7 +94,7 @@ public:
 	}
 
 	//! Calculates the dot product of two column vectors. Vector dimensions have to agree.
-	inline static T dotProduct(const vector_type& v1, const vector_type& v2)
+	static T dotProduct(const vector_type& v1, const vector_type& v2)
 	{
 		T result(0);
 		for(size_t i = 0; i < dim; i++) {
