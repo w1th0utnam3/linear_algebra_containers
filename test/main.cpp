@@ -41,7 +41,7 @@ int run_matrix_test()
 	typedef matrix<double,4,2> mat4x2d;
 
 	msg("Testing braced initialization and subscript operator");
-	mat4x4d mat = {{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}};
+	mat4x4d mat{{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}};
 	for(int i = 0; i < 16; i++) {
 		assert(mat[i] == i+1);
 	}
@@ -84,7 +84,7 @@ int run_matrix_test()
 	ok();
 
 	msg("Testing identity matrix eye()");
-	mat.eye();
+	mat.toIdentity();
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < 4; j++) {
 			if(i == j) {
@@ -140,7 +140,7 @@ int run_matrix_test()
 	assert(mat5[2] == 7);
 	assert(mat5[3] == 7);
 
-	mat4.eye();
+	mat4.toIdentity();
 	matrix<double,2,2> mat6 = mat5-mat4;
 	assert(mat6(0,0) == 6);
 	assert(mat6(1,0) == 7);
