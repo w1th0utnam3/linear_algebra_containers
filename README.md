@@ -6,21 +6,23 @@ c++11 support to compile.
 All files of this project are licensed under the GNU GPL v2 license. Have a look
 at the LICENSE file for more information.
 
+## Overview
 Classes already implemented:
  - `matrix`: m x n matrix with entries of type T
  - `column_vector`: column vector with n entries of type T
  - `vector3`: column vector with 3 entries of type T
  - `quaternion`: class for rotations etc., with 4 entries of type T
 
- All classes are using templates. For example the `matrix` template parameters
- are:
- ```c++
- template<typename T, size_t row_count, size_t column_count>
- class matrix;
- ```
- The other classes use an appropriate subset of these parameters as all of them
- (except for the quaternion) inherit from the `matrix` class.
+All classes are using templates. For example the `matrix` template parameters
+are:
+```c++
+template<typename T, size_t row_count, size_t column_count>
+class matrix;
+```
+The other classes use an appropriate subset of these parameters as all of them
+(except for the quaternion) inherit from the `matrix` class.
 
+## Examples
  Matrix operations are very easy to use and thanks to the template design only
  mathematically correct operations are possible. Example for a matrix product:
  ```c++
@@ -56,6 +58,7 @@ All methods are (in my opinion) appropriately documented with doxygen
 compatible comments. I will shortly add a doxygen script to generate a
 documentation for the classes.
 
+## Todo
 This Readme will be updated shortly. There is still much work to do on the
 classes even though most basic operations are working. If you want to help or
 if you found any bugs feel free to contact me.
