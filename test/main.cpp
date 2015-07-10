@@ -167,6 +167,8 @@ int run_column_vector_test()
 	vec3d v1;
 	vec3d v2;
 
+	// TODO: Test initializer list
+
 	msg("Testing fill() and array subscript operator");
 	v1.fill(2.5);
 	assert(v1[0] == 2.5);
