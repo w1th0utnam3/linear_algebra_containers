@@ -19,7 +19,7 @@ are:
 template<typename T, size_t row_count, size_t column_count>
 class matrix;
 ```
-The other classes use an appropriate subset of these parameters as all of them
+The other classes use a respective subset of these parameters as all of them
 (except for the quaternion) inherit from the `matrix` class.
 
 ## Examples
@@ -33,7 +33,7 @@ The other classes use an appropriate subset of these parameters as all of them
 The multiplication in reverse order will not work because the matrix dimensions
 do not match.
 ```c++
-auto result = mat2*mat1;  // Won't compile
+auto result = mat2*mat1;    // Won't compile
 ```
 Suppose you want to calculate the 2-norm of a column vector. There are three
 ways to get the same result:
@@ -47,11 +47,11 @@ double res3 = vec4(x).length();                     // 3
 assert(res1 == res2);
 assert(res2 == res3);
 ```
- - *1* works because a [1 x m] * [m x 1] matrix multiplication returns a
+ - Notation 1 works because a [1 x m] * [m x 1] matrix multiplication returns a
    value of type T instead of a [1x1] matrix.
- - *2* works because a [m x 1] matrix can be implicitly converted to a
+ - Notation 2 works because a [m x 1] matrix can be implicitly converted to a
    m-dimensional `column_vector`.
- - *3* works because of *2* and thanks to the convenience method of the
+ - Notation 3 works because of *2* and thanks to the convenience method of the
    `column_vector`.
 
 All methods are (in my opinion) appropriately documented with doxygen
@@ -59,12 +59,12 @@ compatible comments. I will shortly add a doxygen script to generate a
 documentation for the classes.
 
 ## Todo
-This Readme will be updated shortly. There is still much work to do on the
-classes even though most basic operations are working. If you want to help or
-if you found any bugs feel free to contact me.
+There is still much work to do on the classes even though most basic operations
+are working. If you want to help or if you find any bugs feel free to contact
+me.
 
 Main areas of work:
- - more quaternion methods
- - more tests
+ - More quaternion methods
+ - More tests
  - Matrix4x4 and Matrix3x3 classes with convenience methods
- - more graphics related features like rotations etc.
+ - More graphics related features like rotations etc.
