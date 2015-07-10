@@ -25,75 +25,118 @@
 #include "column_vector.h"
 
 /**
- * Templated vector type for vectors in 3d space.
+ * Vector template for 3d space
  *
- * @tparam T Type used for the entries of the vector.
+ * This template provides some convenience methods on top of the
+ * column_vector class which are appropriate for calculations in three
+ * dimensions.
+ * @tparam T Type used for the entries of the vector. Must support basic
+ * aritmethic operations.
  */
 template<typename T>
 class vector3 : public column_vector<T,3>
 {
 
 public:
-	//! Constructs a 3d vector with uninitialized values.
+	/**
+	 * @brief Construct an empty vector
+	 *
+	 * All entries are uninitialized if T is of fundamental type or constructed
+	 * using their default constructor if T is a complex type.
+	 */
 	vector3() = default;
 
-	//! Constructs a 3d vector with the specified values.
+	/**
+	 * @brief Construct a vector with values
+	 *
+	 * Constructs a vector initialized to the specified values.
+	 */
 	vector3(T x, T y, T z)
+		: column_vector {{x,y,z}}
 	{
-		this->entries[0] = x;
-		this->entries[1] = y;
-		this->entries[2] = z;
 	}
 
-	//! Constructs a 3d vector from the specified 3 entry vector.
+	/**
+	* @brief Construct a vector3 from column vector
+	*
+	* Constructs a vector3 from the specified 3 dimensional column vector.
+	*/
 	vector3(const column_vector<T,3>& vec)
 		: column_vector<T,3>(vec)
 	{
 	}
 
-	//! Constructs a new column vector from the specified 3 entry rvalue vector.
+	/**
+	* @brief Construct a vector3 from column vector
+	*
+	* Constructs a vector3 from the specified 3 dimensional r-value column
+	* vector.
+	*/
 	vector3(column_vector<T,3>&& vec)
 		: column_vector<T,3>(std::forward<column_vector<T,3>>(vec))
 	{
 	}
 
-	//! Returns the x value of the vector.
+	/**
+	 * @brief Return x value
+	 * @return The x value of the vector
+	 */
 	T x() const
 	{
 		return this->entries[0];
 	}
 
-	//! Returns the y value of the vector
+	/**
+	 * @brief Return y value
+	 * @return The y value of the vector
+	 */
 	T y() const
 	{
 		return this->entries[1];
 	}
 
-	//! Returns the z value of the vector
+	/**
+	 * @brief Return z value
+	 * @return The z value of the vector
+	 */
 	T z() const
 	{
 		return this->entries[2];
 	}
 
-	//! Sets the x value of the vector.
+	/**
+	 * @brief Set x value
+	 * @param value The value that the x-component should be set to.
+	 */
 	void setX(T value)
 	{
 		this->entries[0] = value;
 	}
 
-	//! Sets the y value of the vector.
+	/**
+	 * @brief Set y value
+	 * @param value The value that the y-component should be set to.
+	 */
 	void setY(T value)
 	{
 		this->entries[1] = value;
 	}
 
-	//! Sets the z value of the vector.
+	/**
+	 * @brief Set z value
+	 * @param value The value that the z-component should be set to.
+	 */
 	void setZ(T value)
 	{
 		this->entries[2] = value;
 	}
 
-	//! Sets all values of the vector
+	/**
+	 * @brief Set all values
+	 * @param The value that the x-component should be set to.
+	 * @param The value that the y-component should be set to.
+	 * @param The value that the z-component should be set to.
+	 */
 	void set(T x, T y, T z)
 	{
 		this->entries[0] = x;
@@ -101,7 +144,14 @@ public:
 		this->entries[2] = z;
 	}
 
-	//! Calculates the cross product of two vectors.
+	/**
+	 * @brief Calculate cross product
+	 *
+	 * Calculates the cross product of the two specified vectors.
+	 * @param lhs The left vector.
+	 * @param rhs The right vector.
+	 * @return The vector normal to the two specified vectors.
+	 */
 	static vector3 crossProduct(const vector3& lhs, const vector3& rhs)
 	{
 		vector3 result;

@@ -100,7 +100,7 @@ public:
 	 *
 	 * This method constructs a matrix with all entries set to zero except
 	 * for the diagonal entries which are set to one.
-	 * @return Retuns an identity matrix.
+	 * @return An identity matrix.
 	 */
 	static matrix_type createIdentity()
 	{
