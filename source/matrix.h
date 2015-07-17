@@ -323,6 +323,12 @@ public:
 		return result;
 	}
 
+	//! Returns the negated matrix.
+	friend matrix<T,m,n> operator-(const matrix<T,m,n>& in)
+	{
+		return T(-1)*matrix<T,m,n>(in);
+	}
+
 protected:
 	std::array<T,m*n> entries;
 };
