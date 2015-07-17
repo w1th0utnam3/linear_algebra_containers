@@ -67,6 +67,16 @@ public:
 	}
 
 	/**
+	* @brief Construct a vector3 from matrix
+	*
+	* Constructs a vector3 from the specified 3x1 dimensional matrix.
+	*/
+	vector3(const matrix<T,3,1>& mat)
+		: column_vector<T,3>(mat)
+	{
+	}
+
+	/**
 	* @brief Construct a vector3 from column vector
 	*
 	* Constructs a vector3 from the specified 3 dimensional r-value column
