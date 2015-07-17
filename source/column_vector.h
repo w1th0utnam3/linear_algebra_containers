@@ -109,7 +109,7 @@ public:
 	 * Calculates the  length (the euclidean/2-norm) of the column vector.
 	 * @return The length of the vector.
 	 */
-	T length() const
+	T norm() const
 	{
 		T result(0);
 		for(size_t i = 0; i < dim; i++) {
@@ -127,7 +127,7 @@ public:
 	 * taking the square root of the inner product.
 	 * @return The length of the vector squared.
 	 */
-	T lengthSquared() const
+	T normSquared() const
 	{
 		T result(0);
 		for(size_t i = 0; i < dim; i++) {
@@ -145,7 +145,7 @@ public:
 	 */
 	void normalize()
 	{
-		(*this) *= (1/length());
+		(*this) *= (1/norm());
 	}
 
 	/**

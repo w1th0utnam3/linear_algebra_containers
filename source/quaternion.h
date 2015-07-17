@@ -39,12 +39,16 @@ public:
 	// TODO: toMatrix
 	// TODO: toEulerAngles
 
-	//! Constructs an identity quaternion (1,0,0,0).
-	quaternion() : w(1), x(0), y(0), z(0) {}
+	//! Constructs an identity quaternion q(1 + 0*i + 0*j + 0*k).
+	quaternion() : q0(1), qv(0,0,0) {}
 
-	//! Constructs a quaternion (w,x,y,z).
-	quaternion(T w, T x, T y, T z)
-		: w(w), x(x), y(y), z(z) {}
+	//! Constructs a quaternion q(q0 + q1*i + q2*j + q3*k).
+	quaternion(T q0, T q1, T q2, T q3)
+		: q0(q0), qv(q1,q2,q3) {}
+
+	//! Constructs a quaternion q(q0, qv).
+	quaternion(T q0, vector3<T> qv)
+		: q0(q0), qv(qv) {}
 
 	//! Creates a quaternion for the rotation about the specified angle around the specified axis. Axis must be normalized.
 	static quaternion fromAxisAndAngle(const vector3<T>& axis, T angle)
@@ -52,7 +56,7 @@ public:
 		using std::sin;
 		using std::cos;
 		T s = sin(angle/2);
-		return quaternion(cos(angle/2), axis.x()*s, axis.y()*s, axis.z()*s);
+		return quaternion(cos(angle/2), s*axis);
 	}
 
 	//! Creates a quaternion for the rotation about the specified angle around the specified axis. Axis must be normalized.
@@ -67,92 +71,150 @@ public:
 	//! Calculates the normalized axis/angle representation of the quaternion. Quaternion must be normalized.
 	void getAxisAndAngle(vector3<T>* axisOut, T* angleOut)
 	{
-		T w2 = w*w;
-		if(w2 > 1) {
+		T q0q0 = q0*q0;
+		if(q0q0 > 1) {
 			axisOut->set(T(1), T(0), T(0));
 			angleOut = T(0);
 		} else {
 			using std::acos;
 			using std::sqrt;
-			angleOut = 2*acos(w);
-			T s = sqrt(1-w2);
-			axisOut->set(x/s, y/s, z/s);
+			angleOut = 2*acos(q0);
+			T s = sqrt(1-q0q0);
+			axisOut = (1/s)*qv;
 		}
 	}
 
 	//! Returns the conjugate of this quaternion.
 	quaternion conjugated() const
 	{
-		return quaternion(w,-x,-y,-z);
+		return quaternion(q0,-qv);
 	}
 
 	//! Sets this quaternion to its conjugate.
 	void conjugate()
 	{
-		x = -x;
-		y = -y;
-		z = -z;
+		qv = -qv;
 	}
 
-	// Returns the length / norm of the quaternion.
-	T length() const
+	// Returns the 2 norm of the quaternion.
+	T norm() const
 	{
 		using std::sqrt;
-		return sqrt(w*w + x*x + y*y + z*z);
+		return sqrt(q0*q0 + qv.normSquared());
+	}
+
+	// Returns the squared 2 norm of the quaternion.
+	T normSquared() const
+	{
+		return q0*q0 + qv.normSquared();
 	}
 
 	//! Returns the normalized unit from this quaterion.
 	quaternion normalized() const
 	{
-		T l = length();
-		return quaternion(w/l,x/l,y/l,z/l);
+		T l = norm();
+		return quaternion(q0/l, (1/l)*qv);
 	}
 
 	//! Normalizes this quaternion.
 	void normalize()
 	{
-		double l = length();
-		w = w/l;
-		x = x/l;
-		y = y/l;
-		z = z/l;
+		double l = norm();
+		q0 = q0/l;
+		qv *= (1/l);
 	}
 
-	//! Adds two quaternions.
-	friend quaternion operator+(const quaternion& lhs, const quaternion& rhs)
+	//! Returns the inverse of the quaternion
+	quaternion inverse() const
 	{
-		return quaternion(lhs.w + rhs.w, lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+		return (1/this->normSquared())*(this->conjugated());
 	}
 
-	//! Subtracts two quaternions.
-	friend quaternion operator-(const quaternion& lhs, const quaternion& rhs)
+	//! Inverts this quaternion
+	quaternion invert()
 	{
-		return quaternion(lhs.w - rhs.w, lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+		conjugate();
+		double l2 = normSquared();
+		q0 /= l2;
+		qv *= (1/l2);
 	}
 
-	//! Multiplies two quaternions.
-	friend quaternion operator*(const quaternion& q1, const quaternion& q2)
+	//! Returns the logarithm of the quaternion
+	static quaternion log(const quaternion& q)
 	{
-		return quaternion(q1.w*q2.w - q1.x*q2.x - q1.y*q2.y - q1.z*q2.z,
-						  q1.w*q2.x + q1.x*q2.w + q1.y*q2.z - q1.z*q2.y,
-						  q1.w*q2.y - q1.x*q2.z + q1.y*q2.w + q1.z*q2.x,
-						  q1.w*q2.z + q1.x*q2.y - q1.y*q2.x + q1.z*q2.w);
+		using std::log;
+		using std::acos;
+
+		auto lq = q.norm();
+		auto lv = q.qv.norm();
+		auto a = acos(q.q0 / lq)/lv;
+
+		return quaternion(log(lq), a*q.qv);
+	}
+
+	//! Returns the exponential value of the quaternion
+	static quaternion exp(const quaternion& q)
+	{
+		using std::exp;
+		using std::cos;
+		using std::sin;
+
+		auto lv = q.qv.norm();
+		auto s = sin(lv) / lv;
+		return exp(q.q0)*quaternion(cos(lv), s*q.qv);
+	}
+
+	//! Returns the quaternion to the power of t
+	static quaternion pow(const quaternion& q, T t)
+	{
+		return exp(t*log(q));
+	}
+
+	//! Linear interpolation between two quaternions
+	static quaternion slerp(const quaternion& q1, const quaternion& q2, T t)
+	{
+		return q1+t*(q2-q1);
+	}
+
+	//! Composition operator of quaternions
+	friend quaternion operator*(const quaternion& q, const quaternion& p)
+	{
+		return quaternion(q.q0*p.q0 - q.qv.transposed()*p.qv, q.q0*p.qv + p.q0*q.qv + vector3<T>::crossProduct(q.qv, p.qv));
 	}
 
 	//! Scales a quaternion.
-	friend quaternion operator*(const T& factor, const quaternion& q)
+	friend quaternion operator*(const T& n, const quaternion& q)
 	{
-		return quaternion(q.w*factor, q.x*factor, q.y*factor, q.z*factor);
+		return quaternion(n*q.q0, n*q.qv);
 	}
 
-	//! Scales a quaternion.
-	friend const quaternion operator*(const quaternion& q, const T& factor)
+	//! The SO(3) group addition operator (not componentwise sum!)
+	friend quaternion operator+(const quaternion& q, const quaternion& v)
 	{
-		return quaternion(q.w*factor, q.x*factor, q.y*factor, q.z*factor);
+		return q*exp(0.5*v);
+	}
+
+	//! The SO(3) group difference operator (not componentwise sum!)
+	friend quaternion operator-(const quaternion& q, const quaternion& p)
+	{
+		return 2*log(p.inverse()*q);
+	}
+
+	//! Returns whether two quaternions have the same components
+	friend bool operator==(const quaternion& lhs, const quaternion& rhs)
+	{
+		return ((lhs.q0 == rhs.q0) && (lhs.qv == rhs.qv));
+	}
+
+	//! Returns whether two quaternions do not have the same components
+	friend bool operator!=(const quaternion& lhs, const quaternion& rhs)
+	{
+		return !(lhs == rhs);
 	}
 
 private:
-	T w; T x; T y; T z;
+	T q0;
+	vector3<T> qv;
 };
 
 #endif // QUATERNION

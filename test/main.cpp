@@ -185,18 +185,18 @@ int run_column_vector_test()
 
 	msg("Testing length()");
 	v1.fill(3);
-	assert(v1.length() == sqrt(27));
+	assert(v1.norm() == sqrt(27));
 	ok();
 
 	msg("Testing normalize()");
 	v1.fill(3);
 	v1.normalize();
-	assert(v1.length() == 1);
+	assert(v1.norm() == 1);
 	ok();
 
 	msg("Testing normalized()");
 	v1.fill(3);
-	assert(v1.normalized().length() == 1);
+	assert(v1.normalized().norm() == 1);
 	ok();
 
 	msg("Testing dot product");
@@ -276,8 +276,23 @@ int run_vector3_test()
 int run_quaternion_test()
 {
 	typedef quaternion<double> quatd;
+	typedef vector3<double> vec3d;
 
-	quatd q(1,2,3,4);
+	matrix<double,3,1> mt;
+	mt[0] = 1;
+	mt[1] = 1;
+	mt[2] = 1;
+	vec3d t(mt);
+	vec3d a(1,1,1);
+	a.normalize();
+	quatd q = quatd::fromAxisAndAngle(a, 0.1);
+	std::cout << q.norm() << std::endl;
+
+	vec3d b(1.2,1.99,3.27);
+	b.normalize();
+	quatd q2 = quatd::fromAxisAndAngle(b, 0.6);
+
+	assert(quatd::slerp(q,q2,0.5) == (q*quatd::pow(q.inverse()*q2,0.5)));
 
 	// TODO: All tests
 
