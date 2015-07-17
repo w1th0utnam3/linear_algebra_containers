@@ -33,6 +33,10 @@
 template<typename T>
 class quaternion
 {
+protected:
+	T q0;				// Scalar component of the quaternion
+	vector3<T> qv;		// Vector component of the quaternion
+
 public:
 	// TODO: Single member access
 	// TODO: Different rotation orders
@@ -176,13 +180,13 @@ public:
 		return q1+t*(q2-q1);
 	}
 
-	//! Composition operator of quaternions
+	//! Composition operator for quaternions
 	friend quaternion operator*(const quaternion& q, const quaternion& p)
 	{
 		return quaternion(q.q0*p.q0 - q.qv.transposed()*p.qv, q.q0*p.qv + p.q0*q.qv + vector3<T>::crossProduct(q.qv, p.qv));
 	}
 
-	//! Scales a quaternion.
+	//! Scales a quaternion
 	friend quaternion operator*(const T& n, const quaternion& q)
 	{
 		return quaternion(n*q.q0, n*q.qv);
@@ -211,10 +215,6 @@ public:
 	{
 		return !(lhs == rhs);
 	}
-
-private:
-	T q0;
-	vector3<T> qv;
 };
 
 #endif // QUATERNION

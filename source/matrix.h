@@ -48,6 +48,8 @@
 template<typename T, size_t row_count, size_t column_count>
 class matrix
 {
+protected:
+	std::array<T,m*n> entries;		// The entries of the matrix
 
 public:
 	//! The number of rows of this matrix type.
@@ -328,9 +330,6 @@ public:
 	{
 		return T(-1)*matrix<T,m,n>(in);
 	}
-
-protected:
-	std::array<T,m*n> entries;
 };
 
 //! Returns the matrix product of two matrices. Matrix dimensions must agree. ([m x n]*[n x p] = [m x p])
