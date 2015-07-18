@@ -143,6 +143,18 @@ public:
 		qv *= (1/l2);
 	}
 
+	//! Returns the scalar component of the quaternion
+	T scalar() const
+	{
+		return q0;
+	}
+
+	//! Returns the vector component of the quaternion
+	vector3<T> vector() const
+	{
+		return qv;
+	}
+
 	//! Returns the logarithm of the quaternion
 	static quaternion log(const quaternion& q)
 	{
