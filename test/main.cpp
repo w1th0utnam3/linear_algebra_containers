@@ -294,6 +294,30 @@ int run_quaternion_test()
 
 	assert(quatd::slerp(q,q2,0.5) == (q*quatd::pow(q.inverse()*q2,0.5)));
 
+    vec3d x(0,1,0);
+    const double pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
+    const vec3d omega(2*pi,0,0);
+    const double sec = 10;
+    const int N = 100;
+    const double dt = sec/N;
+
+    std::cout << x.x() << "\t" << x.y() << "\t" << x.z() << std::endl;
+
+    quatd q0, qr;
+    for(int i = 0; i < N; i++) {
+        quatd integral(0, omega.x()*dt, omega.y()*dt, omega.z()*dt);
+        qr = q0*quatd::exp(0.5*integral);
+        qr.normalize();
+
+        //auto y = (qr*quatd(0,x)*qr.inverse()).vector();
+        //std::cout << y.x() << "\t" << y.y() << "\t" << y.z() << "\t" << std::endl;
+
+        //x = (qr*quatd(0,x)*qr.inverse()).vector();
+        x = qr.transform(x);
+        std::cout << x.x() << "\t" << x.y() << "\t" << x.z() << "\t" << std::endl;
+        //q0 = qr;
+    }
+
 	// TODO: All tests
 
 	return 0;
