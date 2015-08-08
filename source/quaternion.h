@@ -186,11 +186,23 @@ public:
 		return exp(t*log(q));
 	}
 
-	//! Linear interpolation between two quaternions
-	static quaternion slerp(const quaternion& q1, const quaternion& q2, T t)
-	{
-		return q1+t*(q2-q1);
-	}
+    //! SO(3) group addition operator
+    static quaternion composition(const quaternion& q, const quaternion& v)
+    {
+        return q*exp(0.5*v);
+    }
+
+    //! SO(3) group difference operator
+    static quaternion difference(const quaternion& q, const quaternion& p)
+    {
+        return 2*log(p.inverse()*q);
+    }
+
+    //! Linear interpolation between two quaternions
+    static quaternion slerp(const quaternion& q1, const quaternion& q2, T t)
+    {
+        return composition(q1,t*(difference(q2,q1)));
+    }
 
 	//! Composition operator for quaternions
 	friend quaternion operator*(const quaternion& q, const quaternion& p)
@@ -204,16 +216,16 @@ public:
 		return quaternion(n*q.q0, n*q.qv);
 	}
 
-	//! The SO(3) group addition operator (not componentwise sum!)
+    //! Componentwise sum of two quaternions
 	friend quaternion operator+(const quaternion& q, const quaternion& v)
 	{
-		return q*exp(0.5*v);
+        return quaternion(q.q0 + v.q0, q.qv + v.qv);
 	}
 
-	//! The SO(3) group difference operator (not componentwise sum!)
+    //! Componentwise difference of two quaternions
 	friend quaternion operator-(const quaternion& q, const quaternion& p)
 	{
-		return 2*log(p.inverse()*q);
+        return quaternion(q.q0 - v.q0, q.qv - v.qv);
 	}
 
 	//! Returns whether two quaternions have the same components
