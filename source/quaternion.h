@@ -155,6 +155,12 @@ public:
 		return qv;
 	}
 
+    //! Returns the transformation of the specified vector by this quaternion. Quaternion must be normalized!
+    vector3<T> transform(const vector3<T>& v) const
+    {
+        return 2*qv*(qv.transposed()*v)-v*(qv.transposed()*qv)+(q0*q0)*v+2*q0*(vector3<T>::crossProduct(qv,v));
+    }
+
 	//! Returns the logarithm of the quaternion
 	static quaternion log(const quaternion& q)
 	{
