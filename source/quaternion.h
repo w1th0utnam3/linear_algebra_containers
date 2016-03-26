@@ -26,7 +26,13 @@
 #include "vector3.h"
 
 /**
- * Template quaternion class with basic quaternion algebra operations.
+ * Quaternion template class with basic quaternion algebra operations
+ *
+ * This template provides a basic quaternion implementation. It represents
+ * a standard quaternion: q = q0 + q1*i + q2*j + q3*k as a combination
+ * of a scalar (q0) and a vector (q1, q2, q3).
+ * Currently there are some operations implemented to help with rotation
+ * operations of 3 dimensional vectors.
  *
  * @tparam T Type used for the entries of the quaternion.
  */
@@ -35,7 +41,7 @@ class quaternion
 {
 protected:
 	T q0;				// Scalar component of the quaternion
-	vector3<T> qv;		// Vector component of the quaternion
+    vector3<T> qv;		// Vector component of the quaternion (q1, q2, q3)
 
 public:
 	// TODO: Single member access
