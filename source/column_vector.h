@@ -104,20 +104,21 @@ public:
 	}
 
 	/**
-	 * @brief Calculate euclidean norm
+	 * @brief Calculate the inner product
 	 *
-	 * Calculates the  length (the euclidean/2-norm) of the column vector.
-	 * @return The length of the vector.
+	 * This method calculates the inner product (dot product) of two column
+	 * vectors.
+	 * @param v1 The first vector.
+	 * @param v2 The second vector.
+	 * @return The inner product of the two vectors.
 	 */
-	T norm() const
+	static T dotProduct(const vector_type& v1, const vector_type& v2)
 	{
 		T result(0);
 		for(size_t i = 0; i < dim; i++) {
-			result += this->entries[i]*this->entries[i];
+			result += v1.entries[i] * v2.entries[i];
 		}
-
-		using std::sqrt;
-		return sqrt(result);
+		return result;
 	}
 
 	/**
@@ -129,12 +130,42 @@ public:
 	 */
 	T normSquared() const
 	{
-		T result(0);
-		for(size_t i = 0; i < dim; i++) {
-			result += this->entries[i]*this->entries[i];
-		}
+		return vector_type::dotProduct(*this,*this);
+	}
 
-		return result;
+	/**
+	 * @brief Calculate squared euclidean norm
+	 *
+	 * Calculates the length (the euclidean/2-norm) of the specified column vector without
+	 * taking the square root of the inner product.
+	 * @param v The vector to claculate the squared length for.
+	 * @return The length of the vector.
+	 */
+	static T normSquared(const vector_type& v) {
+		return v.normSquared();
+	}
+
+	/**
+	 * @brief Calculate euclidean norm
+	 *
+	 * Calculates the length (the euclidean/2-norm) of the column vector.
+	 * @return The length of the vector.
+	 */
+	T norm() const
+	{
+		using std::sqrt;
+		return sqrt(this->normSquared());
+	}
+
+	/**
+	 * @brief Calculate euclidean norm
+	 *
+	 * Calculates the length (the euclidean/2-norm) of the specified column vector.
+	 * @param v The vector to claculate the length for.
+	 * @return The length of the vector.
+	 */
+	static T norm(const vector_type& v) {
+		return v.norm();
 	}
 
 	/**
@@ -162,21 +193,15 @@ public:
 	}
 
 	/**
-	 * @brief Calculate the inner product
+	 * @brief Create normalized copy
 	 *
-	 * This method calculates the inner product (dot product) of two column
-	 * vectors.
-	 * @param v1 The first vector.
-	 * @param v2 The second vector.
-	 * @return The inner product of the two vectors.
+	 * Creates a normalized copy of the specified vector.
+	 * @param v The vector to create a normalized copy of.
+	 * @return The normalized copy of the vector.
 	 */
-	static T dotProduct(const vector_type& v1, const vector_type& v2)
+	static vector_type normalized(const vector_type& v)
 	{
-		T result(0);
-		for(size_t i = 0; i < dim; i++) {
-			result += v1.entries[i] * v2.entries[i];
-		}
-		return result;
+		return v.normalized();
 	}
 };
 
