@@ -46,8 +46,16 @@ int run_matrix_test()
 	typedef matrix<double,4,1> mat4x1d;
 	typedef matrix<double,4,2> mat4x2d;
 
-	msg("Testing braced initialization and subscript operator");
+	msg("Testing aggregate initialization and subscript operator");
 	mat4x4d mat{{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}};
+	for(int i = 0; i < 16; i++) {
+		assert(mat[i] == i+1);
+	}
+	ok();
+
+	msg("Testing initializer list");
+	mat.fill(0);
+	mat = {1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.};
 	for(int i = 0; i < 16; i++) {
 		assert(mat[i] == i+1);
 	}
@@ -169,11 +177,21 @@ int run_matrix_test()
 
 int run_column_vector_test()
 {
+	msg("Testing initializer list");
+	{
+		typedef column_vector<double,4> vec4d;
+		vec4d ref;
+		ref.fill(4.5);
+		vec4d test(4.5,4.5,4.5,4.5);
+		vec4d test2 = {4.5,4.5,4.5,4.5};
+		assert(test == ref);
+		assert(test2 == ref);
+	}
+	ok();
+
 	typedef column_vector<double,3> vec3d;
 	vec3d v1;
 	vec3d v2;
-
-	// TODO: Test initializer list
 
 	msg("Testing fill() and array subscript operator");
 	v1.fill(2.5);
@@ -206,7 +224,7 @@ int run_column_vector_test()
 	assert(vec3d::normalized(v1).norm() == 1);
 	ok();
 
-	msg("Testing dot product");
+	msg("Testing dotProduct()");
 	v1[0] = 1;
 	v1[1] = 2;
 	v1[2] = 3;
@@ -216,7 +234,7 @@ int run_column_vector_test()
 	assert(vec3d::dotProduct(v1,v2) == 32);
 	ok();
 
-	msg("Testing normSquared");
+	msg("Testing normSquared()");
 	v1.fill(2);
 	assert(v1.normSquared() == 12);
 	v2.fill(3);
@@ -250,6 +268,12 @@ int run_vector3_test()
 	assert(v2[2] == k);
 	ok();
 
+	msg("Testing initializer list");
+	v1.fill(4);
+	v2 = {4,4,4};
+	assert(v1 == v2);
+	ok();
+
 	msg("Testing getters");
 	v1[0] = 3.3;
 	v1[1] = 4.4;
@@ -269,7 +293,7 @@ int run_vector3_test()
 	assert(v2.z() == 22);
 	ok();
 
-	msg("Testing cross product");
+	msg("Testing crossProduct()");
 	v1.setX(1);
 	v1.setY(2);
 	v1.setZ(3);
@@ -293,15 +317,33 @@ int run_quaternion_test()
 	typedef vector3<double> vec3d;
 
 	msg("Testing constructor");
+	quatd q(1,2,3,4);
+	assert(q.scalar() == 1);
+	assert(q.q0() == 1);
+	assert(q.vector() == vec3d(2,3,4));
+	assert(q.q1() == 2);
+	assert(q.q2() == 3);
+	assert(q.q3() == 4);
+
+	q = {0,1,2,3};
+	assert(q.scalar() == 0);
+	assert(q.q0() == 0);
+	assert(q.vector() == vec3d(1,2,3));
+	assert(q.q1() == 1);
+	assert(q.q2() == 2);
+	assert(q.q3() == 3);
+	ok();
+
+	msg("Testing fromAxisAndAngle()");
 	vec3d axis(1,1,1);
 	axis.normalize();
 
 	const double angle = 0.1;
-	quatd q = quatd::fromAxisAndAngle(axis, angle);
+	q = quatd::fromAxisAndAngle(axis, angle);
 	assert(q.norm() == 1);
 	ok();
 
-	msg("Testing getAxisAndAngle");
+	msg("Testing getAxisAndAngle()");
 	{
 
 		vec3d axis_out;
@@ -312,7 +354,7 @@ int run_quaternion_test()
 	}
 	ok();
 
-	msg("Testing slerp");
+	msg("Testing slerp()");
 	{
 		vec3d b(1.2,1.99,3.27);
 		b.normalize();
@@ -322,7 +364,7 @@ int run_quaternion_test()
 	}
 	ok();
 
-	msg("Testing exp and transform");
+	msg("Testing exp() and transform()");
 	{
 		vec3d x(0,1,0);
 		const double pi = 3.141592653589793238462643383;
@@ -345,8 +387,6 @@ int run_quaternion_test()
 		assert(x.z() < 2e-15);
 	}
 	ok();
-
-	// TODO: All tests
 
 	return 0;
 }

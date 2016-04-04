@@ -48,12 +48,16 @@ public:
 	typedef column_vector<T,dim> vector_type;
 
 	/**
-	 * @brief Construct an empty vector
+	 * @brief Construct a column vector
 	 *
-	 * All entries are uninitialized if T is of fundamental type or constructed
-	 * using their default constructor if T is a complex type.
+	 * Constructs a vector without initilization or a parameter pack
+	 * for initialization depending on the arguments of the constructor.
 	 */
-	column_vector() = default;
+	template<typename ...Ts>
+	column_vector(Ts... values)
+		: matrix{{values...}}
+	{
+	}
 
 	/**
 	 * @brief Construct a vector with specified entries
@@ -68,20 +72,6 @@ public:
 	}
 
 	/**
-	 * @brief Construct a vector with specified entries
-	 *
-	 * This constructor initializes the vector with the specified entries.
-	 * It also allows using the braced initializer list syntax to initalize
-	 * the matrix, e.g.: column_vector<T,3> vec{{1,2,3}}.
-	 * This constructor uses perfect forwarind to pass the an r-value to the
-	 * constructor of the base class
-	 */
-	column_vector(std::array<T,dim>&& array)
-		: matrix(std::forward<std::array<T,n*m>>(array))
-	{
-	}
-
-	/**
 	 * @brief Construct a vector from a matrix
 	 *
 	 * Constructs a column vector from a [m x 1] matrix by copying all values
@@ -89,17 +79,6 @@ public:
 	 */
 	column_vector(const matrix<T,dim,1>& mat)
 		: matrix<T,dim,1>(mat)
-	{
-	}
-
-	/**
-	 * @brief Construct a vector from a matrix
-	 *
-	 * Constructs a column vector from a [m x 1] r-value matrix by forwarding
-	 * all values to the constructor of the data array.
-	 */
-	column_vector(matrix<T,dim,1>&& mat)
-		: matrix<T,dim,1>(std::forward<matrix<T,dim,1>>(mat))
 	{
 	}
 

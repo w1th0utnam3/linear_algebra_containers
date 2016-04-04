@@ -61,13 +61,16 @@ public:
 	typedef matrix<T,n,m> transposed_matrix_type;
 
 	/**
-	 * @brief Construct an empty matrix
+	 * @brief Construct a matrix
 	 *
-	 * All entries are uninitialized if T is of fundamental type or
-	 * constructed using their default constructor if T is a complex
-	 * type.
+	 * Constructs a matrix without initilization or a m*n parameter pack
+	 * for initialization depending on the arguments of the constructor.
 	 */
-	matrix() = default;
+	template<typename ...Ts>
+	matrix(Ts... values)
+		: _entries{values...}
+	{
+	}
 
 	/**
 	 * @brief Construct a matrix with specified entries
@@ -292,41 +295,41 @@ public:
 	}
 
 	//! Returns the matrix scaled by the specified factor.
-	friend matrix<T,m,n> operator*(const matrix<T,m,n>& mat, double factor)
+	friend matrix_type operator*(const matrix_type& mat, double factor)
 	{
-		matrix<T,m,n> result(mat);
+		matrix_type result(mat);
 		result *= factor;
 		return result;
 	}
 
 	//! Returns the matrix scaled by the specified factor.
-	friend matrix<T,m,n> operator*(double factor, const matrix<T,m,n>& mat)
+	friend matrix_type operator*(double factor, const matrix_type& mat)
 	{
-		matrix<T,m,n> result(mat);
+		matrix_type result(mat);
 		result *= factor;
 		return result;
 	}
 
 	//! Returns the sum of the two matrices. Matrix dimensions must agree.
-	friend matrix<T,m,n> operator+(const matrix<T,m,n>& lhs, const matrix<T,m,n>& rhs)
+	friend matrix_type operator+(const matrix_type& lhs, const matrix_type& rhs)
 	{
-		matrix<T,m,n> result(lhs);
+		matrix_type result(lhs);
 		result += rhs;
 		return result;
 	}
 
 	//! Returns the difference of the two matrices. Matrix dimensions must agree.
-	friend matrix<T,m,n> operator-(const matrix<T,m,n>& lhs, const matrix<T,m,n>& rhs)
+	friend matrix_type operator-(const matrix_type& lhs, const matrix_type& rhs)
 	{
-		matrix<T,m,n> result(lhs);
+		matrix_type result(lhs);
 		result -= rhs;
 		return result;
 	}
 
 	//! Returns the negated matrix.
-	friend matrix<T,m,n> operator-(const matrix<T,m,n>& in)
+	friend matrix_type operator-(const matrix_type& in)
 	{
-		return T(-1)*matrix<T,m,n>(in);
+		return T(-1)*matrix_type(in);
 	}
 
 protected:
