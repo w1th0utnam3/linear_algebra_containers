@@ -22,6 +22,7 @@
 
 #include <cmath>
 #include <utility>
+#include <tuple>
 
 #include "vector3.h"
 
@@ -84,14 +85,22 @@ public:
 		T q0q0 = q0*q0;
 		if(q0q0 > 1) {
 			axisOut->set(T(1), T(0), T(0));
-			angleOut = T(0);
+			*angleOut = T(0);
 		} else {
 			using std::acos;
 			using std::sqrt;
-			angleOut = 2*acos(q0);
+			*angleOut = 2*acos(q0);
 			T s = sqrt(1-q0q0);
-			axisOut = (1/s)*qv;
+			*axisOut = (1/s)*qv;
 		}
+	}
+
+	//! Returns a tuple containing the axis/angle representation of the quaternion. Quaternion must be normalized.
+	std::tuple<vector3<T>,T> getAxisAndAngle()
+	{
+		std::tuple<vector3<T>,T> axisAngle;
+		getAxisAndAngle(&std::get<vector3<T>>(axisAngle),&std::get<T>(axisAngle));
+		return axisAngle;
 	}
 
 	//! Returns the conjugate of this quaternion.
