@@ -77,7 +77,7 @@ public:
 	 * the matrix, e.g.: matrix<T,2,2> mat{{1,2,3,4}}.
 	 */
 	matrix(const std::array<T,n*m>& array)
-		: entries(array)
+		: _entries(array)
 	{
 	}
 
@@ -91,7 +91,7 @@ public:
 	 * constructor of the data array.
 	 */
 	matrix(std::array<T,n*m>&& array)
-		: entries(std::forward<std::array<T,n*m>>(array))
+		: _entries(std::forward<std::array<T,n*m>>(array))
 	{
 	}
 
@@ -120,7 +120,7 @@ public:
 	 */
 	T& operator()(size_t row, size_t column)
 	{
-		return entries[row + column*m];
+		return _entries[row + column*m];
 	}
 
 	/**
@@ -134,7 +134,7 @@ public:
 	 */
 	const T& operator()(size_t row, size_t column) const
 	{
-		return entries[row + column*m];
+		return _entries[row + column*m];
 	}
 
 	/**
@@ -148,7 +148,7 @@ public:
 	 */
 	T& operator[](size_t i)
 	{
-		return entries[i];
+		return _entries[i];
 	}
 
 	/**
@@ -162,7 +162,7 @@ public:
 	 */
 	const T& operator[](size_t i) const
 	{
-		return entries[i];
+		return _entries[i];
 	}
 
 	/**
@@ -173,7 +173,7 @@ public:
 	 */
 	void fill(const T& value)
 	{
-		entries.fill(value);
+		_entries.fill(value);
 	}
 
 	/**
@@ -183,7 +183,7 @@ public:
 	 */
 	void zeros()
 	{
-		entries.fill(T(0));
+		_entries.fill(T(0));
 	}
 
 	/**
@@ -194,7 +194,7 @@ public:
 	 */
 	void toIdentity()
 	{
-		entries.fill(T(0));
+		_entries.fill(T(0));
 
 		const size_t smaller_dim = (row_count < column_count) ? row_count : column_count;
 		for(size_t i = 0; i < smaller_dim; i++) {
@@ -213,7 +213,7 @@ public:
 	 */
 	T* data()
 	{
-		return entries.data();
+		return _entries.data();
 	}
 
 	/**
@@ -227,7 +227,7 @@ public:
 	 */
 	T* data() const
 	{
-		return entries.data();
+		return _entries.data();
 	}
 
 	/**
@@ -253,7 +253,7 @@ public:
 	matrix_type operator+=(const matrix_type& rhs)
 	{
 		for(size_t i = 0; i < (m*n); i++) {
-			entries[i] += rhs.entries[i];
+			_entries[i] += rhs._entries[i];
 		}
 		return *this;
 	}
@@ -262,7 +262,7 @@ public:
 	matrix_type operator-=(const matrix_type& rhs)
 	{
 		for(size_t i = 0; i < (m*n); i++) {
-			entries[i] -= rhs.entries[i];
+			_entries[i] -= rhs._entries[i];
 		}
 		return *this;
 	}
@@ -271,7 +271,7 @@ public:
 	matrix_type operator*=(double factor)
 	{
 		for(size_t i = 0; i < (m*n); i++) {
-			entries[i] *= factor;
+			_entries[i] *= factor;
 		}
 		return *this;
 	}
@@ -280,7 +280,7 @@ public:
 	friend bool operator==(const matrix_type& lhs, const matrix_type& rhs)
 	{
 		for(size_t i = 0; i < n*m; i++) {
-			if (lhs.entries[i] != rhs.entries[i]) return false;
+			if (lhs._entries[i] != rhs._entries[i]) return false;
 		}
 		return true;
 	}
@@ -330,7 +330,7 @@ public:
 	}
 
 protected:
-        std::array<T,m*n> entries;  // The entries of the matrix
+		std::array<T,m*n> _entries;  // The entries of the matrix
 };
 
 //! Prints the matrix to the specified stream

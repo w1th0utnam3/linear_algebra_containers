@@ -93,7 +93,7 @@ public:
 	 */
 	T x() const
 	{
-		return this->entries[0];
+		return this->_entries[0];
 	}
 
 	/**
@@ -102,7 +102,7 @@ public:
 	 */
 	T y() const
 	{
-		return this->entries[1];
+		return this->_entries[1];
 	}
 
 	/**
@@ -111,7 +111,7 @@ public:
 	 */
 	T z() const
 	{
-		return this->entries[2];
+		return this->_entries[2];
 	}
 
 	/**
@@ -120,7 +120,7 @@ public:
 	 */
 	void setX(T value)
 	{
-		this->entries[0] = value;
+		this->_entries[0] = value;
 	}
 
 	/**
@@ -129,7 +129,7 @@ public:
 	 */
 	void setY(T value)
 	{
-		this->entries[1] = value;
+		this->_entries[1] = value;
 	}
 
 	/**
@@ -138,7 +138,7 @@ public:
 	 */
 	void setZ(T value)
 	{
-		this->entries[2] = value;
+		this->_entries[2] = value;
 	}
 
 	/**
@@ -149,9 +149,9 @@ public:
 	 */
 	void set(T x, T y, T z)
 	{
-		this->entries[0] = x;
-		this->entries[1] = y;
-		this->entries[2] = z;
+		this->_entries[0] = x;
+		this->_entries[1] = y;
+		this->_entries[2] = z;
 	}
 
 	/**

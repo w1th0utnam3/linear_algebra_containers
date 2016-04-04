@@ -116,7 +116,7 @@ public:
 	{
 		T result(0);
 		for(size_t i = 0; i < dim; i++) {
-			result += v1.entries[i] * v2.entries[i];
+			result += v1._entries[i] * v2._entries[i];
 		}
 		return result;
 	}
