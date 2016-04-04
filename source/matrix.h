@@ -23,6 +23,7 @@
 #include <cstdlib>
 #include <array>
 #include <utility>
+#include <iostream>
 
 /**
  * Matrix template with support of basic linear alegbra operations
@@ -331,6 +332,22 @@ public:
 protected:
         std::array<T,m*n> entries;  // The entries of the matrix
 };
+
+//! Prints the matrix to the specified stream
+template<typename T, size_t m, size_t n>
+inline std::ostream& operator<<(std::ostream& os, const matrix<T,m,n>& mat)
+{
+	os << "[";
+	for(size_t i = 0; i < m; i++) {
+		for(size_t j = 0; j < n-1; j++) {
+			os << mat(i,j) << " ";
+		}
+		os << mat(i,n-1) << ";";
+	}
+	os << "]";
+
+	return os;
+}
 
 //! Returns the matrix product of two matrices. Matrix dimensions must agree. ([m x n]*[n x p] = [m x p])
 template<typename T, size_t m, size_t n, size_t p>
