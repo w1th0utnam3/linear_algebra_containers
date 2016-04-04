@@ -42,9 +42,9 @@ static T relativeError(T value, T approxValue) {
 
 int run_matrix_test()
 {
-	typedef matrix<double,4,4> mat4x4d;
-	typedef matrix<double,4,1> mat4x1d;
-	typedef matrix<double,4,2> mat4x2d;
+	typedef lin_algebra::matrix<double,4,4> mat4x4d;
+	typedef lin_algebra::matrix<double,4,1> mat4x1d;
+	typedef lin_algebra::matrix<double,4,2> mat4x2d;
 
 	msg("Testing aggregate initialization and subscript operator");
 	mat4x4d mat{{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}};
@@ -118,7 +118,7 @@ int run_matrix_test()
 	for(int i = 0; i < 8; i++) {
 		mat2[i] = i+1;
 	}
-	matrix<double,4,2> mat3 = mat*mat2;
+	lin_algebra::matrix<double,4,2> mat3 = mat*mat2;
 	assert(mat3(0,0) == 90);
 	assert(mat3(1,0) == 100);
 	assert(mat3(2,0) == 110);
@@ -130,7 +130,7 @@ int run_matrix_test()
 	ok();
 
 	msg("Testing matrix scaling");
-	matrix<double,2,2> mat4;
+	lin_algebra::matrix<double,2,2> mat4;
 	mat4.fill(3);
 	mat4 *= 2;
 	assert(mat4[0] == 6);
@@ -140,7 +140,7 @@ int run_matrix_test()
 	ok();
 
 	msg("Testing matrix sum/difference");
-	matrix<double,2,2> mat5;
+	lin_algebra::matrix<double,2,2> mat5;
 	mat5.fill(2);
 	mat4 -= mat5;
 	assert(mat4[0] == 4);
@@ -155,7 +155,7 @@ int run_matrix_test()
 	assert(mat5[3] == 7);
 
 	mat4.toIdentity();
-	matrix<double,2,2> mat6 = mat5-mat4;
+	lin_algebra::matrix<double,2,2> mat6 = mat5-mat4;
 	assert(mat6(0,0) == 6);
 	assert(mat6(1,0) == 7);
 	assert(mat6(0,1) == 7);
@@ -179,7 +179,7 @@ int run_column_vector_test()
 {
 	msg("Testing initializer list");
 	{
-		typedef column_vector<double,4> vec4d;
+		typedef lin_algebra::column_vector<double,4> vec4d;
 		vec4d ref;
 		ref.fill(4.5);
 		vec4d test(4.5,4.5,4.5,4.5);
@@ -189,7 +189,7 @@ int run_column_vector_test()
 	}
 	ok();
 
-	typedef column_vector<double,3> vec3d;
+	typedef lin_algebra::column_vector<double,3> vec3d;
 	vec3d v1;
 	vec3d v2;
 
@@ -253,7 +253,7 @@ int run_column_vector_test()
 
 int run_vector3_test()
 {
-	typedef vector3<double> vec3d;
+	typedef lin_algebra::vector3<double> vec3d;
 
 	msg("Testing constructor");
 	vec3d v1(0.1,312.112,77);
@@ -313,8 +313,8 @@ int run_vector3_test()
 
 int run_quaternion_test()
 {
-	typedef quaternion<double> quatd;
-	typedef vector3<double> vec3d;
+	typedef lin_algebra::quaternion<double> quatd;
+	typedef lin_algebra::vector3<double> vec3d;
 
 	msg("Testing constructor");
 	quatd q(1,2,3,4);

@@ -24,6 +24,8 @@
 
 #include "column_vector.h"
 
+namespace lin_algebra {
+
 /**
  * Vector template for 3d space
  *
@@ -171,5 +173,7 @@ public:
 		return result;
 	}
 };
+
+}
 
 #endif // VECTOR3

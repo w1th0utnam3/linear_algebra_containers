@@ -25,6 +25,8 @@
 #include <utility>
 #include <iostream>
 
+namespace lin_algebra {
+
 /**
  * Matrix template with support of basic linear alegbra operations
  *
@@ -379,6 +381,8 @@ inline T operator*(const matrix<T,1,m>& lhs, const matrix<T,m,1>& rhs)
 		result += lhs(0,i) * rhs(i,0);
 	}
 	return result;
+}
+
 }
 
 #endif // MATRIX

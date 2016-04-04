@@ -26,6 +26,8 @@
 
 #include "vector3.h"
 
+namespace lin_algebra {
+
 /**
  * Quaternion template class with basic quaternion algebra operations
  *
@@ -291,5 +293,7 @@ public:
 		return !(lhs == rhs);
 	}
 };
+
+}
 
 #endif // QUATERNION

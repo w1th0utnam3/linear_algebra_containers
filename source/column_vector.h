@@ -28,6 +28,8 @@
 
 #include "matrix.h"
 
+namespace lin_algebra {
+
 /**
  * Column vector template with support of basic vector operations
  *
@@ -183,5 +185,7 @@ public:
 		return v.normalized();
 	}
 };
+
+}
 
 #endif // COLUMN_VECTOR_H
