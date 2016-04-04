@@ -34,6 +34,12 @@ void ok() {
 	std::cout << "ok." << std::endl;
 }
 
+template<typename T>
+static T relativeError(T value, T approxValue) {
+	using std::abs;
+	return abs(T(1)-(value/approxValue));
+}
+
 int run_matrix_test()
 {
 	typedef matrix<double,4,4> mat4x4d;
@@ -197,6 +203,7 @@ int run_column_vector_test()
 	msg("Testing normalized()");
 	v1.fill(3);
 	assert(v1.normalized().norm() == 1);
+	assert(vec3d::normalized(v1).norm() == 1);
 	ok();
 
 	msg("Testing dot product");
@@ -207,6 +214,13 @@ int run_column_vector_test()
 	v2[1] = 5;
 	v2[2] = 6;
 	assert(vec3d::dotProduct(v1,v2) == 32);
+	ok();
+
+	msg("Testing normSquared");
+	v1.fill(2);
+	assert(v1.normSquared() == 12);
+	v2.fill(3);
+	assert(vec3d::normSquared(v2) == 27);
 	ok();
 
 	msg("Testing implicit conversion between matrix and column vector");
@@ -278,45 +292,59 @@ int run_quaternion_test()
 	typedef quaternion<double> quatd;
 	typedef vector3<double> vec3d;
 
-	matrix<double,3,1> mt;
-	mt[0] = 1;
-	mt[1] = 1;
-	mt[2] = 1;
-	vec3d t(mt);
-	vec3d a(1,1,1);
-	a.normalize();
-	quatd q = quatd::fromAxisAndAngle(a, 0.1);
-	std::cout << q.norm() << std::endl;
+	msg("Testing constructor");
+	vec3d axis(1,1,1);
+	axis.normalize();
 
-	vec3d b(1.2,1.99,3.27);
-	b.normalize();
-	quatd q2 = quatd::fromAxisAndAngle(b, 0.6);
+	const double angle = 0.1;
+	quatd q = quatd::fromAxisAndAngle(axis, angle);
+	assert(q.norm() == 1);
+	ok();
 
-	assert(quatd::slerp(q,q2,0.5) == (q*quatd::pow(q.inverse()*q2,0.5)));
+	msg("Testing getAxisAndAngle");
+	{
 
-    vec3d x(0,1,0);
-    const double pi = 3.141592653589793238462643383279502884197169399375105820974944592307816406286;
-    const vec3d omega(2*pi,0,0);
-    const double sec = 10;
-    const int N = 100;
-    const double dt = sec/N;
+		vec3d axis_out;
+		double angle_out;
+		std::tie(axis_out, angle_out) = q.getAxisAndAngle();
+		assert(relativeError<double>(angle, angle_out) < 2e-14);
+		assert(vec3d::norm(axis_out-axis) < 2e-14);
+	}
+	ok();
 
-    std::cout << x.x() << "\t" << x.y() << "\t" << x.z() << std::endl;
+	msg("Testing slerp");
+	{
+		vec3d b(1.2,1.99,3.27);
+		b.normalize();
+		quatd q2 = quatd::fromAxisAndAngle(b, 0.6);
 
-    quatd q0, qr;
-    for(int i = 0; i < N; i++) {
-        quatd integral(0, omega.x()*dt, omega.y()*dt, omega.z()*dt);
-        qr = q0*quatd::exp(0.5*integral);
-        qr.normalize();
+		assert(quatd::slerp(q,q2,0.5) == (q*quatd::pow(q.inverse()*q2,0.5)));
+	}
+	ok();
 
-        //auto y = (qr*quatd(0,x)*qr.inverse()).vector();
-        //std::cout << y.x() << "\t" << y.y() << "\t" << y.z() << "\t" << std::endl;
+	msg("Testing exp and transform");
+	{
+		vec3d x(0,1,0);
+		const double pi = 3.141592653589793238462643383;
+		const vec3d omega(2*pi,0,0);
+		const double sec = 10;
+		const int N = 100;
+		const double dt = sec/N;
 
-        //x = (qr*quatd(0,x)*qr.inverse()).vector();
-        x = qr.transform(x);
-        std::cout << x.x() << "\t" << x.y() << "\t" << x.z() << "\t" << std::endl;
-        //q0 = qr;
-    }
+		quatd q0, qr;
+		for(int i = 0; i < N; i++) {
+			quatd integral(0, omega.x()*dt, omega.y()*dt, omega.z()*dt);
+			qr = q0*quatd::exp(0.5*integral);
+			qr.normalize();
+
+			x = qr.transform(x);
+		}
+
+		assert(x.x() == 0);
+		assert(relativeError<double>(1, x.y()) < 2e-14);
+		assert(x.z() < 2e-15);
+	}
+	ok();
 
 	// TODO: All tests
 
