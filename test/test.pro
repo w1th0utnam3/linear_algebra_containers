@@ -6,8 +6,9 @@ CONFIG -= qt
 SOURCES += main.cpp
 
 HEADERS += \
-    ../source/matrix.h \
-    ../source/column_vector.h \
-    ../source/vector3.h \
-    ../source/quaternion.h
-    
+        ../source/matrix.h \
+        ../source/column_vector.h \
+        ../source/vector3.h \
+        ../source/quaternion.h \
+    ../source/matrixbase.h
+

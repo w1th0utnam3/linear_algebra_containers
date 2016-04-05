@@ -20,7 +20,7 @@
 #ifndef VECTOR3
 #define VECTOR3
 
-#include <utility>
+#include <initializer_list>
 
 #include "column_vector.h"
 
@@ -36,7 +36,7 @@ namespace lin_algebra {
  * aritmethic operations.
  */
 template<typename T>
-class vector3 : public column_vector<T,3>
+class Vector3 : public ColumnVector<T,3>
 {
 
 public:
@@ -46,48 +46,13 @@ public:
 	 * All entries are uninitialized if T is of fundamental type or constructed
 	 * using their default constructor if T is a complex type.
 	 */
-	vector3() = default;
+	Vector3() = default;
 
-	/**
-	 * @brief Construct a vector with values
-	 *
-	 * Constructs a vector initialized to the specified values.
-	 */
-	vector3(T x, T y, T z)
-		: column_vector{x,y,z}
-	{
-	}
+	//! Construct a vector with the specified values
+	Vector3(T x, T y, T z) : Matrix{x,y,z} {}
 
-	/**
-	* @brief Construct a vector3 from column vector
-	*
-	* Constructs a vector3 from the specified 3 dimensional column vector.
-	*/
-	vector3(const column_vector<T,3>& vec)
-		: column_vector<T,3>(vec)
-	{
-	}
-
-	/**
-	* @brief Construct a vector3 from matrix
-	*
-	* Constructs a vector3 from the specified 3x1 dimensional matrix.
-	*/
-	vector3(const matrix<T,3,1>& mat)
-		: column_vector<T,3>(mat)
-	{
-	}
-
-	/**
-	* @brief Construct a vector3 from column vector
-	*
-	* Constructs a vector3 from the specified 3 dimensional r-value column
-	* vector.
-	*/
-	vector3(column_vector<T,3>&& vec)
-		: column_vector<T,3>(std::forward<column_vector<T,3>>(vec))
-	{
-	}
+	//! Implicit conversion from ColumnVector to Vector3
+	Vector3(const ColumnVector<T,3>& v) : Matrix(v) {}
 
 	/**
 	 * @brief Return x value
@@ -95,7 +60,7 @@ public:
 	 */
 	T x() const
 	{
-		return this->_entries[0];
+		return this->entries_[0];
 	}
 
 	/**
@@ -104,7 +69,7 @@ public:
 	 */
 	T y() const
 	{
-		return this->_entries[1];
+		return this->entries_[1];
 	}
 
 	/**
@@ -113,7 +78,7 @@ public:
 	 */
 	T z() const
 	{
-		return this->_entries[2];
+		return this->entries_[2];
 	}
 
 	/**
@@ -122,7 +87,7 @@ public:
 	 */
 	void setX(T value)
 	{
-		this->_entries[0] = value;
+		this->entries_[0] = value;
 	}
 
 	/**
@@ -131,7 +96,7 @@ public:
 	 */
 	void setY(T value)
 	{
-		this->_entries[1] = value;
+		this->entries_[1] = value;
 	}
 
 	/**
@@ -140,7 +105,7 @@ public:
 	 */
 	void setZ(T value)
 	{
-		this->_entries[2] = value;
+		this->entries_[2] = value;
 	}
 
 	/**
@@ -151,9 +116,9 @@ public:
 	 */
 	void set(T x, T y, T z)
 	{
-		this->_entries[0] = x;
-		this->_entries[1] = y;
-		this->_entries[2] = z;
+		this->entries_[0] = x;
+		this->entries_[1] = y;
+		this->entries_[2] = z;
 	}
 
 	/**
@@ -164,9 +129,9 @@ public:
 	 * @param rhs The right vector.
 	 * @return The vector normal to the two specified vectors.
 	 */
-	static vector3 crossProduct(const vector3& lhs, const vector3& rhs)
+	static Vector3 crossProduct(const Vector3& lhs, const Vector3& rhs)
 	{
-		vector3 result;
+		Vector3 result;
 		result[0] = lhs[1]*rhs[2] - lhs[2]*rhs[1];
 		result[1] = lhs[2]*rhs[0] - lhs[0]*rhs[2];
 		result[2] = lhs[0]*rhs[1] - lhs[1]*rhs[0];
