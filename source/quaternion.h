@@ -294,6 +294,17 @@ public:
 	}
 };
 
+//! Prints the quaternion to the specified stream
+template<typename T>
+inline std::ostream& operator<<(std::ostream& os, const quaternion<T>& quat)
+{
+	os << "[";
+	os << quat.q0() << ";" << quat.q1() << ";" << quat.q2() << ";" << quat.q3() << ";";
+	os << "]";
+
+	return os;
+}
+
 }
 
 #endif // QUATERNION
