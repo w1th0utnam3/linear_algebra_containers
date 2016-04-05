@@ -95,11 +95,7 @@ public:
 	 */
 	static T dotProduct(const vector_type& v1, const vector_type& v2)
 	{
-		T result(0);
-		for(size_t i = 0; i < dim; i++) {
-			result += v1._entries[i] * v2._entries[i];
-		}
-		return result;
+		return v1.transposed()*v2;
 	}
 
 	/**
