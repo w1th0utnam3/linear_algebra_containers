@@ -57,7 +57,7 @@ public:
 	 */
 	template<typename ...Ts>
 	column_vector(Ts... values)
-		: matrix{{values...}}
+		: matrix<T,dim,1>{{values...}}
 	{
 	}
 
@@ -69,7 +69,7 @@ public:
 	 * the vector, e.g.: column_vector<T,3> vec{{1,2,3}}.
 	 */
 	column_vector(const std::array<T,dim>& array)
-		: matrix(array)
+		: matrix<T,dim,1>(array)
 	{
 	}
 

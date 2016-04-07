@@ -54,7 +54,7 @@ public:
 	 * Constructs a vector initialized to the specified values.
 	 */
 	vector3(T x, T y, T z)
-		: column_vector{x,y,z}
+		: column_vector<T,3>{x,y,z}
 	{
 	}
 
