@@ -170,9 +170,10 @@ int run_matrix_test()
 
 int run_column_vector_test()
 {
+	typedef lin_algebra::ColumnVector<double,4> vec4d;
+
 	msg("Testing initializer list");
 	{
-		typedef lin_algebra::ColumnVector<double,4> vec4d;
 		vec4d ref;
 		ref.fill(4.5);
 		vec4d test(4.5,4.5,4.5,4.5);
@@ -182,15 +183,15 @@ int run_column_vector_test()
 	}
 	ok();
 
-	typedef lin_algebra::ColumnVector<double,3> vec3d;
-	vec3d v1;
-	vec3d v2;
+	vec4d v1;
+	vec4d v2;
 
 	msg("Testing fill() and array subscript operator");
 	v1.fill(2.5);
 	assert(v1[0] == 2.5);
 	assert(v1[1] == 2.5);
 	assert(v1[2] == 2.5);
+	assert(v1[3] == 2.5);
 	ok();
 
 	msg("Testing zeors()");
@@ -198,11 +199,12 @@ int run_column_vector_test()
 	assert(v2[0] == 0);
 	assert(v2[1] == 0);
 	assert(v2[2] == 0);
+	assert(v2[3] == 0);
 	ok();
 
-	msg("Testing length()");
+	msg("Testing norm()");
 	v1.fill(3);
-	assert(v1.norm() == sqrt(27));
+	assert(v1.norm() == sqrt(36));
 	ok();
 
 	msg("Testing normalize()");
@@ -220,23 +222,28 @@ int run_column_vector_test()
 	v1[0] = 1;
 	v1[1] = 2;
 	v1[2] = 3;
-	v2[0] = 4;
-	v2[1] = 5;
-	v2[2] = 6;
-	assert(vec3d::dotProduct(v1,v2) == 32);
+	v1[3] = 4;
+	v2[0] = 5;
+	v2[1] = 6;
+	v2[2] = 7;
+	v2[3] = 8;
+	assert(vec4d::dotProduct(v1,v2) == 70);
 	ok();
 
 	msg("Testing normSquared()");
 	v1.fill(2);
-	assert(v1.normSquared() == 12);
+	assert(v1.normSquared() == 16);
 	v2.fill(3);
 	ok();
 
 	msg("Testing implicit conversion between matrix and column vector");
 	v1.fill(2); v2.fill(3);
-	assert(vec3d::dotProduct((v1.transposed().transposed()), v2) == 18);
+	assert(vec4d::dotProduct((v1.transposed().transposed()), v2) == 24);
 	auto t = v1.transposed().transposed();
-	assert(vec3d::dotProduct(t, v2) == 18);
+	assert(vec4d::dotProduct(t, v2) == 24);
+	lin_algebra::Matrix<double,4,4> mat;
+	mat.toIdentity();
+	assert(vec4d::dotProduct(mat*t, v2) == 24);
 	ok();
 
 	return 0;
@@ -245,6 +252,7 @@ int run_column_vector_test()
 int run_vector3_test()
 {
 	typedef lin_algebra::Vector3<double> vec3d;
+	typedef lin_algebra::Matrix<double,3,3> mat3x3d;
 
 	msg("Testing constructor");
 	vec3d v1(0.1,312.112,77);
@@ -296,6 +304,14 @@ int run_vector3_test()
 	assert(r.y() == 4);
 	assert(r.z() == -2);
 	ok();
+
+	msg("Testing conversions");
+	mat3x3d mat;
+	mat.toIdentity();
+	v1 = {1,2,3};
+	assert((mat*v1).z() == 3);
+	ok();
+
 
 	// TODO: Test implicit conversion
 
