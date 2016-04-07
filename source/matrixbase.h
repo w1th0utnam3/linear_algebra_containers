@@ -38,9 +38,9 @@ class MatrixBase
 {
 public:
 	//! Number of rows of this matrix type
-	static const size_t rows = row_count_param;
+	static constexpr size_t rows = row_count_param;
 	//! Number of columns of this matrix type
-	static const size_t cols = column_count_param;
+	static constexpr size_t cols = column_count_param;
 
 protected:
 	//! Array storing the matrix entries

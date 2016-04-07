@@ -42,19 +42,20 @@ namespace lin_algebra {
  *
  * @tparam T Type used for the entries of the matrix. Must support basic
  * aritmethic operations.
- * @tparam m Number of rows of the matrix.
+ * @tparam m Number of Matrix::rows of the matrix.
  * @tparam n Number of columns of the matrix.
  */
 template<typename T, size_t row_count_param, size_t column_count_param>
 class Matrix : public MatrixBase<T,row_count_param,column_count_param>
 {
-public:
-	//! The type of the matrix
-	typedef Matrix<T,rows,cols> matrix_type;
-	//! The type of the transposed matrix
-	typedef Matrix<T,cols,rows> transposed_matrix_type;
+private:
+	typedef MatrixBase<T,Matrix::rows,Matrix::cols> MatrixBaseType;
 
 public:
+	//! The type of the matrix
+	typedef Matrix<T,Matrix::rows,Matrix::cols> MatrixType;
+	//! The type of the transposed matrix
+	typedef Matrix<T,Matrix::cols,Matrix::rows> TransposedMatrixType;
 
 	/**
 	 * @brief Construct a matrix
@@ -64,7 +65,7 @@ public:
 	 */
 	template<typename ...Ts>
 	Matrix(Ts... values)
-		: MatrixBase{values...}
+		: MatrixBaseType{values...}
 	{
 	}
 
@@ -75,9 +76,9 @@ public:
 	 * for the diagonal entries which are set to one.
 	 * @return An identity matrix.
 	 */
-	static matrix_type createIdentity()
+	static MatrixType createIdentity()
 	{
-		matrix_type result;
+		MatrixType result;
 		result.toIdentity();
 		return result;
 	}
@@ -92,9 +93,9 @@ public:
 	{
 		this->fill(T(0));
 
-		const size_t smaller_dim = (rows < cols) ? rows : cols;
+		const size_t smaller_dim = (Matrix::rows < Matrix::cols) ? Matrix::rows : Matrix::cols;
 		for(size_t i = 0; i < smaller_dim; i++) {
-			this->entries_[MatrixBase::index(i,i)] = 1;
+			this->entries_[MatrixBaseType::index(i,i)] = 1;
 		}
 	}
 
@@ -106,80 +107,80 @@ public:
 	 * I is an identity matrix.
 	 * @return The transposed of this matrix.
 	 */
-	transposed_matrix_type transposed() const
+	TransposedMatrixType transposed() const
 	{
-		transposed_matrix_type result;
-		for(size_t i = 0; i < rows; i++) {
-			for(size_t j = 0; j < cols; j++) {
-				result(j,i) = this->entries_[MatrixBase::index(i,j)];
+		TransposedMatrixType result;
+		for(size_t i = 0; i < Matrix::rows; i++) {
+			for(size_t j = 0; j < Matrix::cols; j++) {
+				result(j,i) = this->entries_[MatrixBaseType::index(i,j)];
 			}
 		}
 		return result;
 	}
 
 	//! Adds the right matrix to the left.
-	matrix_type operator+=(const matrix_type& rhs)
+	MatrixType operator+=(const MatrixType& rhs)
 	{
-		for(size_t i = 0; i < (rows*cols); i++) {
+		for(size_t i = 0; i < (Matrix::rows*Matrix::cols); i++) {
 			this->entries_[i] += rhs.entries_[i];
 		}
 		return *this;
 	}
 
 	//! Substracts the right matrix from the left.
-	matrix_type operator-=(const matrix_type& rhs)
+	MatrixType operator-=(const MatrixType& rhs)
 	{
-		for(size_t i = 0; i < (rows*cols); i++) {
+		for(size_t i = 0; i < (Matrix::rows*Matrix::cols); i++) {
 			this->entries_[i] -= rhs.entries_[i];
 		}
 		return *this;
 	}
 
 	//! Scales the matrix by the specified factor.
-	matrix_type operator*=(double factor)
+	MatrixType operator*=(double factor)
 	{
-		for(size_t i = 0; i < (rows*cols); i++) {
+		for(size_t i = 0; i < (Matrix::rows*Matrix::cols); i++) {
 			this->entries_[i] *= factor;
 		}
 		return *this;
 	}
 
 	//! Returns the matrix scaled by the specified factor.
-	friend matrix_type operator*(const matrix_type& mat, double factor)
+	friend MatrixType operator*(const MatrixType& mat, double factor)
 	{
-		matrix_type result(mat);
+		MatrixType result(mat);
 		result *= factor;
 		return result;
 	}
 
 	//! Returns the matrix scaled by the specified factor.
-	friend matrix_type operator*(double factor, const matrix_type& mat)
+	friend MatrixType operator*(double factor, const MatrixType& mat)
 	{
-		matrix_type result(mat);
+		MatrixType result(mat);
 		result *= factor;
 		return result;
 	}
 
 	//! Returns the sum of the two matrices. Matrix dimensions must agree.
-	friend matrix_type operator+(const matrix_type& lhs, const matrix_type& rhs)
+	friend MatrixType operator+(const MatrixType& lhs, const MatrixType& rhs)
 	{
-		matrix_type result(lhs);
+		MatrixType result(lhs);
 		result += rhs;
 		return result;
 	}
 
 	//! Returns the difference of the two matrices. Matrix dimensions must agree.
-	friend matrix_type operator-(const matrix_type& lhs, const matrix_type& rhs)
+	friend MatrixType operator-(const MatrixType& lhs, const MatrixType& rhs)
 	{
-		matrix_type result(lhs);
+		MatrixType result(lhs);
 		result -= rhs;
 		return result;
 	}
 
 	//! Returns the negated matrix.
-	friend matrix_type operator-(const matrix_type& in)
+	friend MatrixType operator-(const MatrixType& in)
 	{
-		return T(-1)*matrix_type(in);
+		return T(-1)*MatrixType(in);
 	}
 };
 

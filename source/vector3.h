@@ -38,6 +38,8 @@ namespace lin_algebra {
 template<typename T>
 class Vector3 : public ColumnVector<T,3>
 {
+private:
+	typedef ColumnVector<T,3> VectorBaseType;
 
 public:
 	/**
@@ -49,10 +51,10 @@ public:
 	Vector3() = default;
 
 	//! Construct a vector with the specified values
-	Vector3(T x, T y, T z) : Matrix{x,y,z} {}
+	Vector3(T x, T y, T z) : VectorBaseType{x,y,z} {}
 
 	//! Implicit conversion from ColumnVector to Vector3
-	Vector3(const ColumnVector<T,3>& v) : Matrix(v) {}
+	Vector3(const ColumnVector<T,3>& v) : VectorBaseType(v) {}
 
 	/**
 	 * @brief Return x value

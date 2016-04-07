@@ -20,6 +20,8 @@
 #ifndef COLUMN_VECTOR_H
 #define COLUMN_VECTOR_H
 
+#include <cmath>
+
 #include "matrixbase.h"
 #include "matrix.h"
 
@@ -35,17 +37,19 @@ namespace lin_algebra {
  * matrix class with some vector operations.
  * @tparam T Type used for the entries of the vector. Must support basic
  * aritmethic operations.
- * @tparam dim Number of rows of the vector.
+ * @tparam dim Number of Matrix::rows of the vector.
  */
 template<class T, size_t dim>
 class Matrix<T,dim,1> : public MatrixBase<T,dim,1>
 {
+private:
+	typedef MatrixBase<T,dim,1> MatrixBaseType;
 
 public:
 	//! Type of this vector
-	typedef Matrix<T,dim,1> vector_type;
+	typedef Matrix<T,dim,1> VectorType;
 	//! Type of the transposed vector
-	typedef Matrix<T,1,dim> transposed_vector_type;
+	typedef Matrix<T,1,dim> TransposedVectorType;
 
 	/**
 	 * @brief Construct a column vector
@@ -55,7 +59,7 @@ public:
 	 */
 	template<typename ...Ts>
 	Matrix(Ts... values)
-		: MatrixBase{values...}
+		: MatrixBaseType{values...}
 	{
 	}
 
@@ -68,10 +72,10 @@ public:
 	 * @param v2 The second vector.
 	 * @return The inner product of the two vectors.
 	 */
-	static T dotProduct(const vector_type& v1, const vector_type& v2)
+	static T dotProduct(const VectorType& v1, const VectorType& v2)
 	{
 		T product{T(0)};
-		for(size_t i = 0; i < rows; i++) {
+		for(size_t i = 0; i < Matrix::rows; i++) {
 			product += v1[i]*v2[i];
 		}
 		return product;
@@ -87,7 +91,7 @@ public:
 	T normSquared() const
 	{
 		T norm{T(0)};
-		for(size_t i = 0; i < rows; i++) {
+		for(size_t i = 0; i < Matrix::rows; i++) {
 			norm += this->entries_[i]*this->entries_[i];
 		}
 		return norm;
@@ -122,82 +126,82 @@ public:
 	 * Creates a normalized copy of the vector.
 	 * @return The normalized copy of the vector.
 	 */
-	vector_type normalized() const
+	VectorType normalized() const
 	{
-		vector_type copy(*this);
+		VectorType copy(*this);
 		copy.normalize();
 		return copy;
 	}
 
 	//! Returns the transposed vector
-	transposed_vector_type transposed() const
+	TransposedVectorType transposed() const
 	{
-		return transposed_vector_type{this->entries_};
+		return TransposedVectorType{this->entries_};
 	}
 
 	//! Adds the right vector to the left.
-	vector_type operator+=(const vector_type& rhs)
+	VectorType operator+=(const VectorType& rhs)
 	{
-		for(size_t i = 0; i < rows; i++) {
+		for(size_t i = 0; i < Matrix::rows; i++) {
 			this->entries_[i] += rhs.entries_[i];
 		}
 		return *this;
 	}
 
 	//! Substracts the right vector from the left.
-	vector_type operator-=(const vector_type& rhs)
+	VectorType operator-=(const VectorType& rhs)
 	{
-		for(size_t i = 0; i < rows; i++) {
+		for(size_t i = 0; i < Matrix::rows; i++) {
 			this->entries_[i] -= rhs.entries_[i];
 		}
 		return *this;
 	}
 
 	//! Scales the vector by the specified factor.
-	vector_type operator*=(double factor)
+	VectorType operator*=(double factor)
 	{
-		for(size_t i = 0; i < rows; i++) {
+		for(size_t i = 0; i < Matrix::rows; i++) {
 			this->entries_[i] *= factor;
 		}
 		return *this;
 	}
 
 	//! Returns the vector scaled by the specified factor.
-	friend vector_type operator*(const vector_type& mat, double factor)
+	friend VectorType operator*(const VectorType& mat, double factor)
 	{
-		vector_type result(mat);
+		VectorType result(mat);
 		result *= factor;
 		return result;
 	}
 
 	//! Returns the vector scaled by the specified factor.
-	friend vector_type operator*(double factor, const vector_type& mat)
+	friend VectorType operator*(double factor, const VectorType& mat)
 	{
-		vector_type result(mat);
+		VectorType result(mat);
 		result *= factor;
 		return result;
 	}
 
 	//! Returns the sum of the two matrices. Vector dimensions must agree.
-	friend vector_type operator+(const vector_type& lhs, const vector_type& rhs)
+	friend VectorType operator+(const VectorType& lhs, const VectorType& rhs)
 	{
-		vector_type result(lhs);
+		VectorType result(lhs);
 		result += rhs;
 		return result;
 	}
 
 	//! Returns the difference of the two matrices. Vector dimensions must agree.
-	friend vector_type operator-(const vector_type& lhs, const vector_type& rhs)
+	friend VectorType operator-(const VectorType& lhs, const VectorType& rhs)
 	{
-		vector_type result(lhs);
+		VectorType result(lhs);
 		result -= rhs;
 		return result;
 	}
 
 	//! Returns the negated vector.
-	friend vector_type operator-(const vector_type& in)
+	friend VectorType operator-(const VectorType& in)
 	{
-		return T(-1)*vector_type(in);
+		return T(-1)*VectorType(in);
 	}
 };
 
