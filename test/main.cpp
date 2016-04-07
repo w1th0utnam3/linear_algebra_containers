@@ -42,20 +42,12 @@ static T relativeError(T value, T approxValue) {
 
 int run_matrix_test()
 {
-	typedef lin_algebra::matrix<double,4,4> mat4x4d;
-	typedef lin_algebra::matrix<double,4,1> mat4x1d;
-	typedef lin_algebra::matrix<double,4,2> mat4x2d;
+	typedef lin_algebra::Matrix<double,4,4> mat4x4d;
+	typedef lin_algebra::Matrix<double,4,1> mat4x1d;
+	typedef lin_algebra::Matrix<double,4,2> mat4x2d;
 
-	msg("Testing aggregate initialization and subscript operator");
-	mat4x4d mat{{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}};
-	for(int i = 0; i < 16; i++) {
-		assert(mat[i] == i+1);
-	}
-	ok();
-
-	msg("Testing initializer list");
-	mat.fill(0);
-	mat = {1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.};
+	msg("Testing initializer list and subscript operator");
+	mat4x4d mat{1.,2.,3.,4.,5.,6.,7.,8.,9.,10.,11.,12.,13.,14.,15.,16.};
 	for(int i = 0; i < 16; i++) {
 		assert(mat[i] == i+1);
 	}
@@ -97,7 +89,7 @@ int run_matrix_test()
 	assert(v[3] == 0);
 	ok();
 
-	msg("Testing identity matrix eye()");
+	msg("Testing identity matrix toIdentity()");
 	mat.toIdentity();
 	for(int i = 0; i < 4; i++) {
 		for(int j = 0; j < 4; j++) {
@@ -118,7 +110,7 @@ int run_matrix_test()
 	for(int i = 0; i < 8; i++) {
 		mat2[i] = i+1;
 	}
-	lin_algebra::matrix<double,4,2> mat3 = mat*mat2;
+	lin_algebra::Matrix<double,4,2> mat3 = mat*mat2;
 	assert(mat3(0,0) == 90);
 	assert(mat3(1,0) == 100);
 	assert(mat3(2,0) == 110);
@@ -130,7 +122,7 @@ int run_matrix_test()
 	ok();
 
 	msg("Testing matrix scaling");
-	lin_algebra::matrix<double,2,2> mat4;
+	lin_algebra::Matrix<double,2,2> mat4;
 	mat4.fill(3);
 	mat4 *= 2;
 	assert(mat4[0] == 6);
@@ -140,7 +132,7 @@ int run_matrix_test()
 	ok();
 
 	msg("Testing matrix sum/difference");
-	lin_algebra::matrix<double,2,2> mat5;
+	lin_algebra::Matrix<double,2,2> mat5;
 	mat5.fill(2);
 	mat4 -= mat5;
 	assert(mat4[0] == 4);
@@ -155,7 +147,7 @@ int run_matrix_test()
 	assert(mat5[3] == 7);
 
 	mat4.toIdentity();
-	lin_algebra::matrix<double,2,2> mat6 = mat5-mat4;
+	lin_algebra::Matrix<double,2,2> mat6 = mat5-mat4;
 	assert(mat6(0,0) == 6);
 	assert(mat6(1,0) == 7);
 	assert(mat6(0,1) == 7);
@@ -170,16 +162,18 @@ int run_matrix_test()
 	// TODO: Test data
 	// TODO: Test const
 	// TODO: Test transposed
-	// TODO: Test scalar product
+	// TODO: Test comparison operators
+	// TODO: Test negation
 
 	return 0;
 }
 
 int run_column_vector_test()
 {
+	typedef lin_algebra::ColumnVector<double,4> vec4d;
+
 	msg("Testing initializer list");
 	{
-		typedef lin_algebra::column_vector<double,4> vec4d;
 		vec4d ref;
 		ref.fill(4.5);
 		vec4d test(4.5,4.5,4.5,4.5);
@@ -189,15 +183,15 @@ int run_column_vector_test()
 	}
 	ok();
 
-	typedef lin_algebra::column_vector<double,3> vec3d;
-	vec3d v1;
-	vec3d v2;
+	vec4d v1;
+	vec4d v2;
 
 	msg("Testing fill() and array subscript operator");
 	v1.fill(2.5);
 	assert(v1[0] == 2.5);
 	assert(v1[1] == 2.5);
 	assert(v1[2] == 2.5);
+	assert(v1[3] == 2.5);
 	ok();
 
 	msg("Testing zeors()");
@@ -205,11 +199,12 @@ int run_column_vector_test()
 	assert(v2[0] == 0);
 	assert(v2[1] == 0);
 	assert(v2[2] == 0);
+	assert(v2[3] == 0);
 	ok();
 
-	msg("Testing length()");
+	msg("Testing norm()");
 	v1.fill(3);
-	assert(v1.norm() == sqrt(27));
+	assert(v1.norm() == sqrt(36));
 	ok();
 
 	msg("Testing normalize()");
@@ -221,31 +216,33 @@ int run_column_vector_test()
 	msg("Testing normalized()");
 	v1.fill(3);
 	assert(v1.normalized().norm() == 1);
-	assert(vec3d::normalized(v1).norm() == 1);
 	ok();
 
 	msg("Testing dotProduct()");
 	v1[0] = 1;
 	v1[1] = 2;
 	v1[2] = 3;
-	v2[0] = 4;
-	v2[1] = 5;
-	v2[2] = 6;
-	assert(vec3d::dotProduct(v1,v2) == 32);
+	v1[3] = 4;
+	v2[0] = 5;
+	v2[1] = 6;
+	v2[2] = 7;
+	v2[3] = 8;
+	assert(vec4d::dotProduct(v1,v2) == 70);
 	ok();
 
 	msg("Testing normSquared()");
 	v1.fill(2);
-	assert(v1.normSquared() == 12);
+	assert(v1.normSquared() == 16);
 	v2.fill(3);
-	assert(vec3d::normSquared(v2) == 27);
 	ok();
 
 	msg("Testing implicit conversion between matrix and column vector");
 	v1.fill(2); v2.fill(3);
-	assert(vec3d::dotProduct((v1.transposed().transposed()), v2) == 18);
+	assert(vec4d::dotProduct((v1.transposed().transposed()), v2) == 24);
 	auto t = v1.transposed().transposed();
-	assert(vec3d::dotProduct(t, v2) == 18);
+	assert(vec4d::dotProduct(t, v2) == 24);
+	lin_algebra::Matrix<double,4,4> mat = lin_algebra::Matrix<double,4,4>::createIdentity();
+	assert(vec4d::dotProduct(mat*t, v2) == 24);
 	ok();
 
 	return 0;
@@ -253,7 +250,8 @@ int run_column_vector_test()
 
 int run_vector3_test()
 {
-	typedef lin_algebra::vector3<double> vec3d;
+	typedef lin_algebra::Vector3<double> vec3d;
+	typedef lin_algebra::Matrix<double,3,3> mat3x3d;
 
 	msg("Testing constructor");
 	vec3d v1(0.1,312.112,77);
@@ -306,15 +304,19 @@ int run_vector3_test()
 	assert(r.z() == -2);
 	ok();
 
-	// TODO: Test implicit conversion
+	msg("Testing conversions");
+	mat3x3d mat = mat3x3d::createIdentity();
+	v1 = {1,2,3};
+	assert((mat*v1).z() == 3);
+	ok();
 
 	return 0;
 }
 
 int run_quaternion_test()
 {
-	typedef lin_algebra::quaternion<double> quatd;
-	typedef lin_algebra::vector3<double> vec3d;
+	typedef lin_algebra::Quaternion<double> quatd;
+	typedef lin_algebra::Vector3<double> vec3d;
 
 	msg("Testing constructor");
 	quatd q(1,2,3,4);
@@ -350,7 +352,7 @@ int run_quaternion_test()
 		double angle_out;
 		std::tie(axis_out, angle_out) = q.getAxisAndAngle();
 		assert(relativeError<double>(angle, angle_out) < 2e-14);
-		assert(vec3d::norm(axis_out-axis) < 2e-14);
+		assert((axis_out-axis).norm() < 2e-14);
 	}
 	ok();
 

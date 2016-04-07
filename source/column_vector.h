@@ -20,12 +20,9 @@
 #ifndef COLUMN_VECTOR_H
 #define COLUMN_VECTOR_H
 
-#include <cstdlib>
-#include <array>
-#include <utility>
 #include <cmath>
-#include <algorithm>
 
+#include "matrixbase.h"
 #include "matrix.h"
 
 namespace lin_algebra {
@@ -34,53 +31,35 @@ namespace lin_algebra {
  * Column vector template with support of basic vector operations
  *
  * This template provides a basic column vector implementation for n-dimensional
- * vectors. It is based on the matrix template and similarily is not inteded to
- * be used in high performance computing with many dimensions. The class
- * feautres some convenience methods that extend the operations of the matrix
- * class with some vector operations.
- * @tparam T Type used for the entries of the matrix. Must support basic
+ * vectors. It is a partial specialization of the matrix template and similarily
+ * is not inteded to be used in high performance computing with many dimensions.
+ * The class feautres some convenience methods that extend the operations of the
+ * matrix class with some vector operations.
+ * @tparam T Type used for the entries of the vector. Must support basic
  * aritmethic operations.
- * @tparam dim Number of rows of the vector.
+ * @tparam dim Number of Matrix::rows of the vector.
  */
 template<class T, size_t dim>
-class column_vector : public matrix<T,dim,1>
+class Matrix<T,dim,1> : public MatrixBase<T,dim,1>
 {
+private:
+	typedef MatrixBase<T,dim,1> MatrixBaseType;
+
 public:
-	//! The type of this vector
-	typedef column_vector<T,dim> vector_type;
+	//! Type of this vector
+	typedef Matrix<T,dim,1> VectorType;
+	//! Type of the transposed vector
+	typedef Matrix<T,1,dim> TransposedVectorType;
 
 	/**
 	 * @brief Construct a column vector
 	 *
-	 * Constructs a vector without initilization or a parameter pack
+	 * Constructs a vector either without initilization or a parameter pack
 	 * for initialization depending on the arguments of the constructor.
 	 */
 	template<typename ...Ts>
-	column_vector(Ts... values)
-		: matrix<T,dim,1>{{values...}}
-	{
-	}
-
-	/**
-	 * @brief Construct a vector with specified entries
-	 *
-	 * This constructor initializes the vector with the specified entries.
-	 * It also allows using the braced initializer list syntax to initalize
-	 * the vector, e.g.: column_vector<T,3> vec{{1,2,3}}.
-	 */
-	column_vector(const std::array<T,dim>& array)
-		: matrix<T,dim,1>(array)
-	{
-	}
-
-	/**
-	 * @brief Construct a vector from a matrix
-	 *
-	 * Constructs a column vector from a [m x 1] matrix by copying all values
-	 * to the data array of the vector.
-	 */
-	column_vector(const matrix<T,dim,1>& mat)
-		: matrix<T,dim,1>(mat)
+	Matrix(Ts... values)
+		: MatrixBaseType{values...}
 	{
 	}
 
@@ -93,9 +72,13 @@ public:
 	 * @param v2 The second vector.
 	 * @return The inner product of the two vectors.
 	 */
-	static T dotProduct(const vector_type& v1, const vector_type& v2)
+	static T dotProduct(const VectorType& v1, const VectorType& v2)
 	{
-		return v1.transposed()*v2;
+		T product{T(0)};
+		for(size_t i = 0; i < Matrix::rows; i++) {
+			product += v1[i]*v2[i];
+		}
+		return product;
 	}
 
 	/**
@@ -107,19 +90,11 @@ public:
 	 */
 	T normSquared() const
 	{
-		return vector_type::dotProduct(*this,*this);
-	}
-
-	/**
-	 * @brief Calculate squared euclidean norm
-	 *
-	 * Calculates the length (the euclidean/2-norm) of the specified column vector without
-	 * taking the square root of the inner product.
-	 * @param v The vector to claculate the squared length for.
-	 * @return The length of the vector.
-	 */
-	static T normSquared(const vector_type& v) {
-		return v.normSquared();
+		T norm{T(0)};
+		for(size_t i = 0; i < Matrix::rows; i++) {
+			norm += this->entries_[i]*this->entries_[i];
+		}
+		return norm;
 	}
 
 	/**
@@ -132,17 +107,6 @@ public:
 	{
 		using std::sqrt;
 		return sqrt(this->normSquared());
-	}
-
-	/**
-	 * @brief Calculate euclidean norm
-	 *
-	 * Calculates the length (the euclidean/2-norm) of the specified column vector.
-	 * @param v The vector to claculate the length for.
-	 * @return The length of the vector.
-	 */
-	static T norm(const vector_type& v) {
-		return v.norm();
 	}
 
 	/**
@@ -162,25 +126,88 @@ public:
 	 * Creates a normalized copy of the vector.
 	 * @return The normalized copy of the vector.
 	 */
-	vector_type normalized() const
+	VectorType normalized() const
 	{
-		vector_type copy(*this);
+		VectorType copy(*this);
 		copy.normalize();
 		return copy;
 	}
 
-	/**
-	 * @brief Create normalized copy
-	 *
-	 * Creates a normalized copy of the specified vector.
-	 * @param v The vector to create a normalized copy of.
-	 * @return The normalized copy of the vector.
-	 */
-	static vector_type normalized(const vector_type& v)
+	//! Returns the transposed vector
+	TransposedVectorType transposed() const
 	{
-		return v.normalized();
+		return TransposedVectorType{this->entries_};
+	}
+
+	//! Adds the right vector to the left.
+	VectorType operator+=(const VectorType& rhs)
+	{
+		for(size_t i = 0; i < Matrix::rows; i++) {
+			this->entries_[i] += rhs.entries_[i];
+		}
+		return *this;
+	}
+
+	//! Substracts the right vector from the left.
+	VectorType operator-=(const VectorType& rhs)
+	{
+		for(size_t i = 0; i < Matrix::rows; i++) {
+			this->entries_[i] -= rhs.entries_[i];
+		}
+		return *this;
+	}
+
+	//! Scales the vector by the specified factor.
+	VectorType operator*=(double factor)
+	{
+		for(size_t i = 0; i < Matrix::rows; i++) {
+			this->entries_[i] *= factor;
+		}
+		return *this;
+	}
+
+	//! Returns the vector scaled by the specified factor.
+	friend VectorType operator*(const VectorType& mat, double factor)
+	{
+		VectorType result(mat);
+		result *= factor;
+		return result;
+	}
+
+	//! Returns the vector scaled by the specified factor.
+	friend VectorType operator*(double factor, const VectorType& mat)
+	{
+		VectorType result(mat);
+		result *= factor;
+		return result;
+	}
+
+	//! Returns the sum of the two matrices. Vector dimensions must agree.
+	friend VectorType operator+(const VectorType& lhs, const VectorType& rhs)
+	{
+		VectorType result(lhs);
+		result += rhs;
+		return result;
+	}
+
+	//! Returns the difference of the two matrices. Vector dimensions must agree.
+	friend VectorType operator-(const VectorType& lhs, const VectorType& rhs)
+	{
+		VectorType result(lhs);
+		result -= rhs;
+		return result;
+	}
+
+	//! Returns the negated vector.
+	friend VectorType operator-(const VectorType& in)
+	{
+		return T(-1)*VectorType(in);
 	}
 };
+
+//! Column vector template alias
+template<typename T, size_t dim>
+using ColumnVector = Matrix<T,dim,1>;
 
 }
 

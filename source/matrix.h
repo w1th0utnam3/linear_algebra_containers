@@ -20,10 +20,7 @@
 #ifndef MATRIX
 #define MATRIX
 
-#include <cstdlib>
-#include <array>
-#include <utility>
-#include <iostream>
+#include "matrixbase.h"
 
 namespace lin_algebra {
 
@@ -38,29 +35,27 @@ namespace lin_algebra {
  * way of adressing entries: mat(row,column). All operations are implemented
  * by using this row-major () operator. Therefore everything works like it is
  * defined in most linear algebra books.
- * Internally the elments of the matrix are stored in a colum-major ordering in
+ * Internally the elments of the matrix are stored in a column-major ordering in
  * a 1-dimensional data array. This storage is either directly accessible with
  * the implemented [] array subscript operator or via the data() method which
  * returns a pointer to the underliyng data.
  *
  * @tparam T Type used for the entries of the matrix. Must support basic
  * aritmethic operations.
- * @tparam m Number of rows of the matrix.
+ * @tparam m Number of Matrix::rows of the matrix.
  * @tparam n Number of columns of the matrix.
  */
-template<typename T, size_t row_count, size_t column_count>
-class matrix
+template<typename T, size_t row_count_param, size_t column_count_param>
+class Matrix : public MatrixBase<T,row_count_param,column_count_param>
 {
-public:
-	//! The number of rows of this matrix type.
-	static const size_t m = row_count;
-	//! The number of columns of this matrix type.
-	static const size_t n = column_count;
+private:
+	typedef MatrixBase<T,Matrix::rows,Matrix::cols> MatrixBaseType;
 
+public:
 	//! The type of the matrix
-	typedef matrix<T,m,n> matrix_type;
+	typedef Matrix<T,Matrix::rows,Matrix::cols> MatrixType;
 	//! The type of the transposed matrix
-	typedef matrix<T,n,m> transposed_matrix_type;
+	typedef Matrix<T,Matrix::cols,Matrix::rows> TransposedMatrixType;
 
 	/**
 	 * @brief Construct a matrix
@@ -69,34 +64,8 @@ public:
 	 * for initialization depending on the arguments of the constructor.
 	 */
 	template<typename ...Ts>
-	matrix(Ts... values)
-		: _entries{values...}
-	{
-	}
-
-	/**
-	 * @brief Construct a matrix with specified entries
-	 *
-	 * This constructor initializes the matrix with the specified entries.
-	 * It also allows using the braced initializer list syntax to initalize
-	 * the matrix, e.g.: matrix<T,2,2> mat{{1,2,3,4}}.
-	 */
-	matrix(const std::array<T,n*m>& array)
-		: _entries(array)
-	{
-	}
-
-	/**
-	 * @brief Construct a matrix with specified entries
-	 *
-	 * This constructor initializes the matrix with the specified entries.
-	 * It also allows using the braced initializer list syntax to initalize
-	 * the matrix, e.g.: matrix<T,2,2> mat{{1,2,3,4}}.
-	 * This constructor uses perfect forwarind to pass the an r-value to the
-	 * constructor of the data array.
-	 */
-	matrix(std::array<T,n*m>&& array)
-		: _entries(std::forward<std::array<T,n*m>>(array))
+	Matrix(Ts... values)
+		: MatrixBaseType{values...}
 	{
 	}
 
@@ -107,88 +76,11 @@ public:
 	 * for the diagonal entries which are set to one.
 	 * @return An identity matrix.
 	 */
-	static matrix_type createIdentity()
+	static MatrixType createIdentity()
 	{
-		matrix_type result;
+		MatrixType result;
 		result.toIdentity();
 		return result;
-	}
-
-	/**
-	 * @brief 2d matrix index access operator
-	 *
-	 * This operator returns a reference to the entry of the matrix specified
-	 * by the parameters. The operator uses row-major indexing.
-	 * @param row The row of the entry.
-	 * @param column The column of the entry.
-	 * @return A reference to the specified entry.
-	 */
-	T& operator()(size_t row, size_t column)
-	{
-		return _entries[row + column*m];
-	}
-
-	/**
-	 * @brief 2d matrix index access operator
-	 *
-	 * This operator returns a const reference to the entry of the matrix
-	 * specified by the arguments. The operator uses row-major indexing.
-	 * @param row The row of the entry.
-	 * @param column The column of the entry.
-	 * @return A const reference to the specified entry.
-	 */
-	const T& operator()(size_t row, size_t column) const
-	{
-		return _entries[row + column*m];
-	}
-
-	/**
-	 * @brief 1d matrix index access operator
-	 *
-	 * This operator returns a reference to the i-th entry of the matrix. The
-	 * operator uses column-major indexing i.e. in a 3x3 matrix the entries
-	 * [0], [1] and [2] will be the first column of the matrix.
-	 * @param index The one dimensional index of the entry.
-	 * @return A reference to the specified entry.
-	 */
-	T& operator[](size_t i)
-	{
-		return _entries[i];
-	}
-
-	/**
-	 * @brief 1d matrix index access operator
-	 *
-	 * This operator returns a const reference to the i-th entry of the matrix.
-	 * The operator uses column-major indexing i.e. in a 3x3 matrix the entries
-	 * [0], [1] and [2] will be the first column of the matrix.
-	 * @param index The one dimensional index of the entry.
-	 * @return A const reference to the specified entry.
-	 */
-	const T& operator[](size_t i) const
-	{
-		return _entries[i];
-	}
-
-	/**
-	 * @brief Fill matrix with a value
-	 *
-	 * Sets value as the value for all the entries in the matrix.
-	 * @param value The value that should be used to fill the matrix
-	 */
-	void fill(const T& value)
-	{
-		_entries.fill(value);
-	}
-
-	/**
-	 * @brief Fill matrix with zeros
-	 *
-	 * Sets all entries of the matrix to zero.
-	 */
-	void zeros()
-	{
-		_entries.fill(T(0));
 	}
 
 	/**
@@ -199,40 +91,12 @@ public:
 	 */
 	void toIdentity()
 	{
-		_entries.fill(T(0));
+		this->fill(T(0));
 
-		const size_t smaller_dim = (row_count < column_count) ? row_count : column_count;
+		const size_t smaller_dim = (Matrix::rows < Matrix::cols) ? Matrix::rows : Matrix::cols;
 		for(size_t i = 0; i < smaller_dim; i++) {
-			(*this)(i,i) = 1;
+			this->entries_[MatrixBaseType::index(i,i)] = 1;
 		}
-	}
-
-	/**
-	 * @brief Get pointer data
-	 *
-	 * Returns a pointer to the first element in the underlying data
-	 * array which is used to store all entries of the matrix. The matrix
-	 * uses a column-major memory layout therefore it is possble to pass
-	 * this pointer to openGL methods.
-	 * @return Pointer to the entries of the matrix.
-	 */
-	T* data()
-	{
-		return _entries.data();
-	}
-
-	/**
-	 * @brief Get pointer data
-	 *
-	 * Returns a const pointer to the first element in the underlying data
-	 * array which is used to store all entries of the matrix. The matrix
-	 * uses a column-major memory layout therefore it is possble to pass
-	 * this pointer to openGL methods.
-	 * @return Const pointer to the entries of the matrix.
-	 */
-	T* data() const
-	{
-		return _entries.data();
 	}
 
 	/**
@@ -243,122 +107,88 @@ public:
 	 * I is an identity matrix.
 	 * @return The transposed of this matrix.
 	 */
-	transposed_matrix_type transposed() const
+	TransposedMatrixType transposed() const
 	{
-		transposed_matrix_type result;
-		for(size_t i = 0; i < m; i++) {
-			for(size_t j = 0; j < n; j++) {
-				result(j,i) = (*this)(i,j);
+		TransposedMatrixType result;
+		for(size_t i = 0; i < Matrix::rows; i++) {
+			for(size_t j = 0; j < Matrix::cols; j++) {
+				result(j,i) = this->entries_[MatrixBaseType::index(i,j)];
 			}
 		}
 		return result;
 	}
 
 	//! Adds the right matrix to the left.
-	matrix_type operator+=(const matrix_type& rhs)
+	MatrixType operator+=(const MatrixType& rhs)
 	{
-		for(size_t i = 0; i < (m*n); i++) {
-			_entries[i] += rhs._entries[i];
+		for(size_t i = 0; i < (Matrix::rows*Matrix::cols); i++) {
+			this->entries_[i] += rhs.entries_[i];
 		}
 		return *this;
 	}
 
 	//! Substracts the right matrix from the left.
-	matrix_type operator-=(const matrix_type& rhs)
+	MatrixType operator-=(const MatrixType& rhs)
 	{
-		for(size_t i = 0; i < (m*n); i++) {
-			_entries[i] -= rhs._entries[i];
+		for(size_t i = 0; i < (Matrix::rows*Matrix::cols); i++) {
+			this->entries_[i] -= rhs.entries_[i];
 		}
 		return *this;
 	}
 
 	//! Scales the matrix by the specified factor.
-	matrix_type operator*=(double factor)
+	MatrixType operator*=(double factor)
 	{
-		for(size_t i = 0; i < (m*n); i++) {
-			_entries[i] *= factor;
+		for(size_t i = 0; i < (Matrix::rows*Matrix::cols); i++) {
+			this->entries_[i] *= factor;
 		}
 		return *this;
 	}
 
-	//! Returns whether two matrices have identical entries
-	friend bool operator==(const matrix_type& lhs, const matrix_type& rhs)
-	{
-		for(size_t i = 0; i < n*m; i++) {
-			if (lhs._entries[i] != rhs._entries[i]) return false;
-		}
-		return true;
-	}
-
-	//! Returns whether two matrices have not identical entries
-	friend bool operator!=(const matrix_type& lhs, const matrix_type& rhs)
-	{
-		return !(lhs == rhs);
-	}
-
 	//! Returns the matrix scaled by the specified factor.
-	friend matrix_type operator*(const matrix_type& mat, double factor)
+	friend MatrixType operator*(const MatrixType& mat, double factor)
 	{
-		matrix_type result(mat);
+		MatrixType result(mat);
 		result *= factor;
 		return result;
 	}
 
 	//! Returns the matrix scaled by the specified factor.
-	friend matrix_type operator*(double factor, const matrix_type& mat)
+	friend MatrixType operator*(double factor, const MatrixType& mat)
 	{
-		matrix_type result(mat);
+		MatrixType result(mat);
 		result *= factor;
 		return result;
 	}
 
 	//! Returns the sum of the two matrices. Matrix dimensions must agree.
-	friend matrix_type operator+(const matrix_type& lhs, const matrix_type& rhs)
+	friend MatrixType operator+(const MatrixType& lhs, const MatrixType& rhs)
 	{
-		matrix_type result(lhs);
+		MatrixType result(lhs);
 		result += rhs;
 		return result;
 	}
 
 	//! Returns the difference of the two matrices. Matrix dimensions must agree.
-	friend matrix_type operator-(const matrix_type& lhs, const matrix_type& rhs)
+	friend MatrixType operator-(const MatrixType& lhs, const MatrixType& rhs)
 	{
-		matrix_type result(lhs);
+		MatrixType result(lhs);
 		result -= rhs;
 		return result;
 	}
 
 	//! Returns the negated matrix.
-	friend matrix_type operator-(const matrix_type& in)
+	friend MatrixType operator-(const MatrixType& in)
 	{
-		return T(-1)*matrix_type(in);
+		return T(-1)*MatrixType(in);
 	}
-
-protected:
-		std::array<T,m*n> _entries;  // The entries of the matrix
 };
-
-//! Prints the matrix to the specified stream
-template<typename T, size_t m, size_t n>
-inline std::ostream& operator<<(std::ostream& os, const matrix<T,m,n>& mat)
-{
-	os << "[";
-	for(size_t i = 0; i < m; i++) {
-		for(size_t j = 0; j < n-1; j++) {
-			os << mat(i,j) << " ";
-		}
-		os << mat(i,n-1) << ";";
-	}
-	os << "]";
-
-	return os;
-}
 
 //! Returns the matrix product of two matrices. Matrix dimensions must agree. ([m x n]*[n x p] = [m x p])
 template<typename T, size_t m, size_t n, size_t p>
-inline matrix<T,m,p> operator*(const matrix<T,m,n>& lhs, const matrix<T,n,p>& rhs)
+inline Matrix<T,m,p> operator*(const Matrix<T,m,n>& lhs, const Matrix<T,n,p>& rhs)
 {
-	matrix<T,m,p> result;
+	Matrix<T,m,p> result;
 	result.zeros();
 
 	for(size_t i = 0; i < m; i++) {
@@ -374,7 +204,7 @@ inline matrix<T,m,p> operator*(const matrix<T,m,n>& lhs, const matrix<T,n,p>& rh
 
 //! Simplified product when the matrix product is the same as a scalar product. ([1 x m]*[m x 1] = [1])
 template<typename T, size_t m>
-inline T operator*(const matrix<T,1,m>& lhs, const matrix<T,m,1>& rhs)
+inline T operator*(const Matrix<T,1,m>& lhs, const Matrix<T,m,1>& rhs)
 {
 	T result(0);
 	for(size_t i = 0; i < m; i++) {
