@@ -241,8 +241,7 @@ int run_column_vector_test()
 	assert(vec4d::dotProduct((v1.transposed().transposed()), v2) == 24);
 	auto t = v1.transposed().transposed();
 	assert(vec4d::dotProduct(t, v2) == 24);
-	lin_algebra::Matrix<double,4,4> mat;
-	mat.toIdentity();
+	lin_algebra::Matrix<double,4,4> mat = lin_algebra::Matrix<double,4,4>::createIdentity();
 	assert(vec4d::dotProduct(mat*t, v2) == 24);
 	ok();
 
@@ -306,14 +305,10 @@ int run_vector3_test()
 	ok();
 
 	msg("Testing conversions");
-	mat3x3d mat;
-	mat.toIdentity();
+	mat3x3d mat = mat3x3d::createIdentity();
 	v1 = {1,2,3};
 	assert((mat*v1).z() == 3);
 	ok();
-
-
-	// TODO: Test implicit conversion
 
 	return 0;
 }
