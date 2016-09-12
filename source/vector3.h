@@ -57,7 +57,10 @@ public:
 	Matrix() = default;
 
 	//! Construct a vector with the specified values
-	Matrix(T x, T y, T z) : MatrixBaseType{x,y,z} {}
+	Matrix(T x, T y, T z)
+		: MatrixBaseType(x,y,z)
+	{
+	}
 
 	/**
 	 * @brief Return x value
@@ -191,9 +194,10 @@ public:
 	 * Normalizes the vector by dividing all entries of it by the length of the
 	 * vector.
 	 */
-	void normalize()
+	VectorType& normalize()
 	{
 		(*this) *= (1/norm());
+		return *this;
 	}
 
 	/**

@@ -26,6 +26,8 @@
 #include "../source/vector3.h"
 #include "../source/quaternion.h"
 
+// TODO: Move to Catch library
+
 void msg(const std::string& string) {
 	std::cout << string << "... ";
 }
@@ -157,6 +159,19 @@ int run_matrix_test()
 	msg("Testing matrix comparison");
 	assert(mat5 != mat4);
 	assert(!(mat5 == mat4));
+	ok();
+
+	msg("Testing matrix copy/move constructors");
+	{
+		mat4x4d mat6(mat);
+		assert(mat6 == mat);
+
+		mat4x4d mat7(mat4x4d().fill(0));
+		assert(mat7 == mat4x4d().fill(0));
+
+		mat4x4d mat8(std::move(mat4x4d().toIdentity()));
+		assert(mat8 == mat4x4d::createIdentity());
+	}
 	ok();
 
 	// TODO: Test data

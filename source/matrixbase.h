@@ -28,7 +28,7 @@ namespace lin_algebra {
 * Base class for matrices and vectors
 *
 * This template provides a basic matrix implementation for m x n matrices. Storage
-* of the entries is column-major. For further explenation see Matrix subclass.
+* of the entries is column-major. For further explanation see Matrix subclass.
 * This class specifies only methods that don't return matrix types so that
 * subclassing and partial specialization allows to return specialized types
 * (i.e. vec+vec=vec, mat*vec=vec to allow (mat*vec).norm()=scalar etc.).
@@ -49,7 +49,10 @@ protected:
 public:
 	//! Constructs a matrix (either unintialized if called without arguments or initialized with the specified values)
 	template<typename ...Ts>
-	MatrixBase(Ts... values) : entries_{values...} {}
+	MatrixBase(Ts... values)
+		: entries_{values...}
+	{
+	}
 
 	//! Returns the element index of the specified coordinates
 	static constexpr size_t index(size_t row, size_t column) { return row + column*rows; }
@@ -70,9 +73,9 @@ public:
 	const T* data() const { return entries_.data(); }
 
 	//! Sets all entries to the specified value
-	void fill(const T& val) { for(auto& v : entries_) v = val; }
+	MatrixBase& fill(const T& val) { for(auto& v : entries_) v = val; return *this; }
 	//! Sets all entries to zero
-	void zeros() { this->fill(T(0)); }
+	MatrixBase& zeros() { this->fill(T(0)); return *this; }
 
 	//! Compares the matrices elementwise for equality
 	friend bool operator==(const MatrixBase& lhs, const MatrixBase& rhs) { return lhs.entries_ == rhs.entries_; }

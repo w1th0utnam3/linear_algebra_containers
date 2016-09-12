@@ -59,7 +59,7 @@ public:
 	 */
 	template<typename ...Ts>
 	Matrix(Ts... values)
-		: MatrixBaseType{values...}
+		: MatrixBaseType(values...)
 	{
 	}
 
@@ -115,9 +115,10 @@ public:
 	 * Normalizes the vector by dividing all entries of it by the length of the
 	 * vector.
 	 */
-	void normalize()
+	VectorType& normalize()
 	{
 		(*this) *= (1/norm());
+		return *this;
 	}
 
 	/**

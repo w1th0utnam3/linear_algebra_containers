@@ -65,7 +65,7 @@ public:
 	 */
 	template<typename ...Ts>
 	Matrix(Ts... values)
-		: MatrixBaseType{values...}
+		: MatrixBaseType(values...)
 	{
 	}
 
@@ -89,7 +89,7 @@ public:
 	 * Sets all entries to zero except for the diagonal entries which are
 	 * set to one.
 	 */
-	void toIdentity()
+	MatrixType& toIdentity()
 	{
 		this->fill(T(0));
 
@@ -97,6 +97,8 @@ public:
 		for(size_t i = 0; i < smaller_dim; i++) {
 			this->entries_[MatrixBaseType::index(i,i)] = 1;
 		}
+
+		return *this;
 	}
 
 	/**
