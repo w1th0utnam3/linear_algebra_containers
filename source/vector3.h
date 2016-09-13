@@ -1,29 +1,34 @@
 /*
 	linear_algebra_containers/vector3 header file
-	Copyright (C) 2015  Fabian Löschner
+	MIT License
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+	Copyright (c) 2016 Fabian Löschner
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
 */
 
-#ifndef VECTOR3
-#define VECTOR3
-
-#include <cmath>
+#pragma once
 
 #include "matrixbase.h"
 #include "matrix.h"
+
+#include <cmath>
 
 namespace lin_algebra {
 
@@ -31,7 +36,7 @@ namespace lin_algebra {
  * Vector template for 3d space
  *
  * This template provides some convenience methods on top of the
- * column_vector class which are appropriate for calculations in three
+ * column_vector class which are useful for calculations in three
  * dimensions.
  * @tparam T Type used for the entries of the vector. Must support basic
  * aritmethic operations.
@@ -290,5 +295,3 @@ template<typename T>
 using Vector3 = Matrix<T,3,1>;
 
 }
-
-#endif // VECTOR3

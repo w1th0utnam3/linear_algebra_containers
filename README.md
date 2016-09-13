@@ -3,7 +3,7 @@ Some basic, c++ template linear algebra classes (vector, matrix, quaternion)
 useful for non high performance calculations (the classes don't use template
 expressions, unrolling or other optimizations).
 
-All files of this project are licensed under the GNU GPL v2 license. Have a look
+All files of this project are licensed under the MIT license. Have a look
 at the LICENSE file for more information.
 
 ## Overview
@@ -74,3 +74,4 @@ Main areas of work:
  - More tests
  - Matrix4x4 and Matrix3x3 classes with convenience methods
  - More graphics related features like rotations etc.
+ - Point classes & coordinate system transformations
