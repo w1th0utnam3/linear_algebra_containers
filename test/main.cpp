@@ -21,12 +21,12 @@
 #include <string>
 #include <cassert>
 
-#include "../source/matrix.h"
-#include "../source/column_vector.h"
-#include "../source/vector3.h"
-#include "../source/quaternion.h"
+#include "matrix.h"
+#include "column_vector.h"
+#include "vector3.h"
+#include "quaternion.h"
 
-// TODO: Move to Catch library
+// TODO: Rewrite test cases using Catch
 
 void msg(const std::string& string) {
 	std::cout << string << "... ";

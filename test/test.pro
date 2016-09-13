@@ -5,10 +5,12 @@ CONFIG -= qt
 
 SOURCES += main.cpp
 
+INCLUDEPATH += ../src/
+
 HEADERS += \
-        ../source/matrix.h \
-        ../source/column_vector.h \
-        ../source/vector3.h \
-        ../source/quaternion.h \
-    ../source/matrixbase.h
+        ../src/matrix.h \
+        ../src/column_vector.h \
+        ../src/vector3.h \
+        ../src/quaternion.h \
+    ../src/matrixbase.h
 
