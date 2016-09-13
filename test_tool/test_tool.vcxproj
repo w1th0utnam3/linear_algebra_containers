@@ -145,6 +145,13 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="testcases.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\column_vector.h" />
+    <ClInclude Include="..\src\matrix.h" />
+    <ClInclude Include="..\src\matrixbase.h" />
+    <ClInclude Include="..\src\quaternion.h" />
+    <ClInclude Include="..\src\vector3.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
